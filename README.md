@@ -2,6 +2,11 @@
 
 home assistant components to control
  - media player
+  - roku
+  - samsung
+  - kodi
+  - sonos
+  - spotify
  - lights
  - switches
 
