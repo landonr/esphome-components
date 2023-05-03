@@ -133,6 +133,29 @@ static std::map<MediaPlayerSupportedFeature, std::string>
         {GROUPING, "GROUPING"},
 };
 
+static std::map<std::string, MediaPlayerSupportedFeature>
+    supported_feature_item_map = {
+        {"PAUSE", PAUSE},
+        {"SEEK", SEEK},
+        {"VOLUME_SET", VOLUME_SET},
+        {"VOLUME_MUTE", VOLUME_MUTE},
+        {"PREVIOUS_TRACK", PREVIOUS_TRACK},
+        {"NEXT_TRACK", NEXT_TRACK},
+        {"TURN_ON", TURN_ON},
+        {"TURN_OFF", TURN_OFF},
+        {"PLAY_MEDIA", PLAY_MEDIA},
+        {"VOLUME_STEP", VOLUME_STEP},
+        {"SELECT_SOURCE", SELECT_SOURCE},
+        {"STOP", STOP},
+        {"CLEAR_PLAYLIST", CLEAR_PLAYLIST},
+        {"PLAY", PLAY},
+        {"SHUFFLE_SET", SHUFFLE_SET},
+        {"SELECT_SOUND_MODE", SELECT_SOUND_MODE},
+        {"BROWSE_MEDIA", BROWSE_MEDIA},
+        {"REPEAT_SET", REPEAT_SET},
+        {"GROUPING", GROUPING},
+};
+
 enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
 
 enum RemotePlayerState {
