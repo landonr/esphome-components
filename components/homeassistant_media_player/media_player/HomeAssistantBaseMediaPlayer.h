@@ -29,6 +29,13 @@ namespace homeassistant_media_player {
 //   MEDIA_ALBUM_ARTIST
 // };
 
+enum MediaPlayerRepeatMode {
+  NOT_SET = 1,
+  OFF = 2,
+  ALL = 3,
+  ONE = 4
+};
+
 enum MediaPlayerSupportedFeature {
   PAUSE = 1,
   SEEK = 2,
@@ -69,9 +76,9 @@ static std::string supported_feature_string(
     case VOLUME_MUTE:
       return "Mute";
     case PREVIOUS_TRACK:
-      return "Previous Track";
+      return "Previous";
     case NEXT_TRACK:
-      return "Next Track";
+      return "Next";
     case TURN_ON:
       return "Turn On";
     case TURN_OFF:
@@ -131,6 +138,7 @@ static std::map<MediaPlayerSupportedFeature, std::string>
         {BROWSE_MEDIA, "BROWSE_MEDIA"},
         {REPEAT_SET, "REPEAT_SET"},
         {GROUPING, "GROUPING"},
+        {MENU_HOME, "MENU_HOME"}
 };
 
 static std::map<std::string, MediaPlayerSupportedFeature>
@@ -154,6 +162,7 @@ static std::map<std::string, MediaPlayerSupportedFeature>
         {"BROWSE_MEDIA", BROWSE_MEDIA},
         {"REPEAT_SET", REPEAT_SET},
         {"GROUPING", GROUPING},
+        {"MENU_HOME", MENU_HOME}
 };
 
 enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
@@ -198,8 +207,10 @@ class HomeAssistantBaseMediaPlayer
   void clearMedia();
   bool is_muted() const override { return this->muted_; }
   bool is_shuffling() const { return this->shuffle_; }
+  MediaPlayerRepeatMode repeat_mode() const { return this->repeat_mode_; }
   void toggle_shuffle();
   void toggle_mute();
+  void toggle_repeat();
   std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> get_features() {
     return supported_features_;
   }
@@ -258,6 +269,7 @@ class HomeAssistantBaseMediaPlayer
  protected:
   bool muted_ = false;
   bool shuffle_ = false;
+  MediaPlayerRepeatMode repeat_mode_ = NOT_SET;
   float volume_step_ = 0.04;
   std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
       supported_features_ = {};
@@ -281,6 +293,7 @@ class HomeAssistantBaseMediaPlayer
   void subscribe_media_title();
   void subscribe_muted();
   void subscribe_shuffle();
+  void subscribe_repeat();
   void subscribe_volume();
   void subscribe_media_position();
   void subscribe_playlist();
@@ -291,6 +304,7 @@ class HomeAssistantBaseMediaPlayer
   void player_supported_features_changed(std::string state);
   void muted_changed(std::string state);
   void shuffle_changed(std::string state);
+  void repeat_changed(std::string state);
   void volume_changed(std::string state);
   void media_duration_changed(std::string state);
   void media_position_changed(std::string state);

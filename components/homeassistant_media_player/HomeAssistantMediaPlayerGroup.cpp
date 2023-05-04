@@ -217,6 +217,14 @@ void HomeAssistantMediaPlayerGroup::toggle_shuffle() {
   }
 }
 
+void HomeAssistantMediaPlayerGroup::toggle_repeat() {
+  HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+      static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);
+  if (activeSpeaker != NULL) {
+    activeSpeaker->toggle_repeat();
+  }
+}
+
 void HomeAssistantMediaPlayerGroup::toggle_mute() {
   HomeAssistantSpeakerMediaPlayer* activeSpeaker =
       static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);

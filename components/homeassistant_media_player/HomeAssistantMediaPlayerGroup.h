@@ -58,8 +58,14 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   void increaseSpeakerVolume();
   void decreaseSpeakerVolume();
   bool mediaShuffling();
+  MediaPlayerRepeatMode get_repeat_mode() {
+    if (active_player_ != NULL) {
+      return active_player_->repeat_mode();
+    }
+  }
   void toggle_shuffle();
   void toggle_mute();
+  void toggle_repeat();
   std::string shuffle_string();
   std::string muteString();
   double getVolumeLevel();

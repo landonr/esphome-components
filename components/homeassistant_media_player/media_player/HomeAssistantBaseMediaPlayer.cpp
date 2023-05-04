@@ -208,9 +208,11 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
         case GROUPING:
           subscribe_group_members();
           break;
+        case REPEAT_SET:
+          subscribe_repeat();
+          break;
         case SELECT_SOUND_MODE:
         case BROWSE_MEDIA:
-        case REPEAT_SET:
         case TURN_ON:
         case TURN_OFF:
         case PLAY_MEDIA:
@@ -260,6 +262,12 @@ void HomeAssistantBaseMediaPlayer::subscribe_shuffle() {
   ESP_LOGI(TAG, "subscribe_shuffle: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::shuffle_changed,
                                 this->entity_id_, "shuffle");
+}
+
+void HomeAssistantBaseMediaPlayer::subscribe_repeat() {
+  ESP_LOGI(TAG, "subscribe_repeat: %s", this->entity_id_.c_str());
+  subscribe_homeassistant_state(&HomeAssistantBaseMediaPlayer::repeat_changed,
+                                this->entity_id_, "repeat");
 }
 
 void HomeAssistantBaseMediaPlayer::subscribe_muted() {
@@ -329,22 +337,31 @@ void HomeAssistantBaseMediaPlayer::media_artist_changed(std::string state) {
 }
 
 void HomeAssistantBaseMediaPlayer::muted_changed(std::string state) {
-  ESP_LOGI(TAG, "%s speaker_muted_changed to %s", this->entity_id_.c_str(),
+  ESP_LOGI(TAG, "muted_changed: %s to %s", this->entity_id_.c_str(),
            state.c_str());
-  if (!can_update_from_api()) {
-    return;
-  }
   muted_ = strcmp(state.c_str(), "on") == 0;
   this->publish_state();
 }
 
 void HomeAssistantBaseMediaPlayer::shuffle_changed(std::string state) {
-  ESP_LOGI(TAG, "%s speaker_muted_changed to %s", this->entity_id_.c_str(),
+  ESP_LOGI(TAG, "shuffle_changed: %s to %s", this->entity_id_.c_str(),
            state.c_str());
-  if (!can_update_from_api()) {
-    return;
-  }
   shuffle_ = strcmp(state.c_str(), "on") == 0;
+  this->publish_state();
+}
+
+void HomeAssistantBaseMediaPlayer::repeat_changed(std::string state) {
+  ESP_LOGI(TAG, "repeat_changed: %s to %s", this->entity_id_.c_str(),
+           state.c_str());
+  if (strcmp(state.c_str(), "all") == 0) {
+    repeat_mode_ = ALL;
+  } else if (strcmp(state.c_str(), "one") == 0) {
+    repeat_mode_ = ONE;
+  } else if (strcmp(state.c_str(), "off") == 0) {
+    repeat_mode_ = OFF;
+  } else {
+    repeat_mode_ = NOT_SET;
+  }
   this->publish_state();
 }
 
@@ -450,7 +467,7 @@ bool HomeAssistantBaseMediaPlayer::supports(
 }
 
 void HomeAssistantBaseMediaPlayer::toggle_shuffle() {
-  ESP_LOGI(TAG, "%s toggle shuffle", this->entity_id_.c_str());
+  ESP_LOGI(TAG, "toggle_shuffle: %s", this->entity_id_.c_str());
   call_homeassistant_service("media_player.shuffle_set",
                              {
                                  {"entity_id", this->entity_id_},
@@ -459,13 +476,41 @@ void HomeAssistantBaseMediaPlayer::toggle_shuffle() {
 }
 
 void HomeAssistantBaseMediaPlayer::toggle_mute() {
-  ESP_LOGI(TAG, "%s toggle mute", this->entity_id_.c_str());
-  ignore_api_updates_with_seconds(2);
+  ESP_LOGI(TAG, "toggle_mute: %s", this->entity_id_.c_str());
   call_homeassistant_service(
       "media_player.volume_mute",
       {
           {"entity_id", this->entity_id_},
           {"is_volume_muted", is_muted() ? "false" : "true"},
+      });
+}
+
+void HomeAssistantBaseMediaPlayer::toggle_repeat() {
+  ESP_LOGI(TAG, "toggle_repeat: %s", this->entity_id_.c_str());
+  std::string repeat_title;
+  if (repeat_mode_ == NOT_SET) {
+    return;
+  } else {
+    switch (repeat_mode_) {
+      case OFF:
+        repeat_mode_ = ALL;
+        repeat_title = "all";
+        break;
+      case ALL:
+        repeat_mode_ = ONE;
+        repeat_title = "one";
+        break;
+      case ONE:
+        repeat_mode_ = OFF;
+        repeat_title = "none";
+        break;
+    }
+  }
+  call_homeassistant_service(
+      "media_player.repeat_set",
+      {
+          {"entity_id", this->entity_id_},
+          {"repeat", repeat_title.c_str()},
       });
 }
 
