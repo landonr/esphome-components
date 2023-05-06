@@ -453,6 +453,12 @@ void HomeAssistantMediaPlayerGroup::call_feature(
     case PAUSE:
       active_player_->playPause();
       break;
+    case REPEAT_SET:
+      toggle_repeat();
+      break;
+    case NEXT_TRACK:
+      active_player_->nextTrack();
+      break;
     case MENU_HOME:
     case VOLUME_SET:
     case SEEK:
@@ -461,13 +467,11 @@ void HomeAssistantMediaPlayerGroup::call_feature(
     case GROUPING:
     case SELECT_SOUND_MODE:
     case BROWSE_MEDIA:
-    case REPEAT_SET:
     case PLAY_MEDIA:
     case VOLUME_STEP:
     case STOP:
     case PLAY:
     case PREVIOUS_TRACK:
-    case NEXT_TRACK:
     default:
       break;
   }
@@ -491,7 +495,7 @@ void HomeAssistantMediaPlayerGroup::syncActivePlayer(RemotePlayerState state) {
 
 void HomeAssistantMediaPlayerGroup::state_updated(
     HomeAssistantBaseMediaPlayer* player) {
-  ESP_LOGI(TAG, "state update callback %d %d", active_player_ == NULL,
+  ESP_LOGD(TAG, "state update callback %d %d", active_player_ == NULL,
            sync_active_player);
 
   bool playerGrouped = player->groupMembers.size() > 1;
