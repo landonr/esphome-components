@@ -62,6 +62,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
     if (active_player_ != NULL) {
       return active_player_->repeat_mode();
     }
+    return MediaPlayerRepeatMode::NOT_SET;
   }
   void toggle_shuffle();
   void toggle_mute();

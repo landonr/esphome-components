@@ -486,9 +486,9 @@ void HomeAssistantBaseMediaPlayer::toggle_mute() {
 }
 
 void HomeAssistantBaseMediaPlayer::toggle_repeat() {
-  ESP_LOGI(TAG, "toggle_repeat: %s", this->entity_id_.c_str());
   std::string repeat_title;
   if (repeat_mode_ == NOT_SET) {
+    ESP_LOGI(TAG, "toggle_repeat: %s not set", this->entity_id_.c_str());
     return;
   } else {
     switch (repeat_mode_) {
@@ -502,10 +502,11 @@ void HomeAssistantBaseMediaPlayer::toggle_repeat() {
         break;
       case ONE:
         repeat_mode_ = OFF;
-        repeat_title = "none";
+        repeat_title = "off";
         break;
     }
   }
+  ESP_LOGI(TAG, "toggle_repeat: %s - %s", this->entity_id_.c_str(), repeat_title.c_str());
   call_homeassistant_service(
       "media_player.repeat_set",
       {
