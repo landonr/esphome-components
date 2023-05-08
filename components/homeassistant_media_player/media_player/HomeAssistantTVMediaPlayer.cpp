@@ -50,9 +50,7 @@ void HomeAssistantTVMediaPlayer::subscribe_sources() {
 
 void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
   ESP_LOGI(TAG, "sources_changed: %s - %s", get_name().c_str(), state.c_str());
-  auto newSources =
-      device_sources->parseJsonArray(replaceAll(state, "\\xa0", " "));
-  device_sources->set_sources(newSources);
+  device_sources->set_sources_json_array(replaceAll(state, "\\xa0", " "));
 }
 
 void HomeAssistantTVMediaPlayer::tvRemoteCommand(

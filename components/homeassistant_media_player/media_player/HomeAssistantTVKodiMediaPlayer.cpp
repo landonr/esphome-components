@@ -27,7 +27,7 @@ void HomeAssistantTVKodiMediaPlayer::subscribe_source() {
 }
 
 void HomeAssistantTVKodiMediaPlayer::subscribe_media_artist() {
-  ESP_LOGI(TAG, "subscribe_media_title: %s", this->entity_id_.c_str());
+  ESP_LOGI(TAG, "subscribe_media_artist: %s", this->entity_id_.c_str());
   subscribe_homeassistant_state(
       &HomeAssistantTVMediaPlayer::media_artist_changed, this->entity_id_,
       "media_series_title");
