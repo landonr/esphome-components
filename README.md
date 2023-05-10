@@ -37,7 +37,7 @@ media_player:
 ### [Home Assistant Component](https://github.com/landonr/esphome-components/tree/main/components/media_player_source)
 Sources are lists of inputs or media that are available to media players
 * Speaker sources
-	* Spotify recent playlists
+	* Spotify playlists (uses the [Spotcast Integration](https://github.com/fondberg/spotcast))
 	* Sonos favorites
 	* Custom playlists
 * Screen sources
