@@ -77,6 +77,7 @@ CONFIG_SCHEMA = cv.typed_schema(
 )
 
 async def to_code(config):
+    cg.add_define("USE_MEDIA_PLAYER")
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await media_player.register_media_player(var, config)
