@@ -2,7 +2,8 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components.homeassistant_light_group.light import HomeAssistantLight, HomeAssistantLightState
 from esphome.const import CONF_ID, CONF_ENTITY_ID, CONF_NAME
-from esphome.components import sensor
+from esphome.components import sensor, light
+from esphome.components.light import LightState
 from .. import homeassistant_component
 
 homeassistant_light_group_ns = cg.esphome_ns.namespace("homeassistant_light_group")
@@ -10,12 +11,12 @@ homeassistant_light_group_ns = cg.esphome_ns.namespace("homeassistant_light_grou
 CONF_LIGHTS = "lights"
 CONF_LIGHT = "light"
 
-AUTO_LOAD = ['homeassistant_component']
+AUTO_LOAD = ['homeassistant_component', 'light']
 DEPENDENCIES = ["api"]
 
 HOMEASSISTANT_LIGHT_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(CONF_ID): cv.use_id(HomeAssistantLightState)
+        cv.GenerateID(CONF_ID): cv.use_id(LightState)
     }
 )
 
@@ -35,7 +36,7 @@ CONFIG_SCHEMA = cv.Schema(
 
 
 async def to_code(config):
-    cg.add_define("USE_LIGHT_GROUP")
+    cg.add_build_flag("-DUSE_LIGHT_GROUP")
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 

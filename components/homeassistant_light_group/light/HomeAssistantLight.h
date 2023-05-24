@@ -10,8 +10,6 @@
 #include "esphome/core/color.h"
 #include "esphome/core/component.h"
 
-#define MAX_BRIGHTNESS 255.0f
-
 namespace esphome {
 namespace homeassistant_light {
 
@@ -30,6 +28,11 @@ enum ColorModeType {
 
 class HomeAssistantLightState : public light::LightState {
   using LightState::LightState;
+
+  // LightCall LightState::turn_on() override { return this->make_call().set_state(true); }
+  // LightCall LightState::turn_off() override { return this->make_call().set_state(false); }
+  // LightCall LightState::toggle() override { return this->make_call().set_state(!this->remote_values.is_on()); }
+  // LightCall LightState::make_call() override { return LightCall(this); }
 };
 
 class HomeAssistantLight
@@ -38,11 +41,11 @@ class HomeAssistantLight
       public homeassistant_component::HomeAssistantComponent {
  public:
   void setup() override;
-  light::LightState* get_light_state_() { return light_state_; }
+  light::LightState* get_light_state() { return light_state_; }
   light::LightTraits get_traits() override;
   void add_on_state_callback(std::function<void()>&& callback);
   void set_color_properties(std::map<std::string, std::string>* data,
-                            const light::LightState* state,
+                            light::LightState* state,
                             const light::ColorMode color_mode);
   void decTemperature();
   void incTemperature();
@@ -52,12 +55,6 @@ class HomeAssistantLight
   void decColor();
   void incColor();
   void setAttribute(const std::map<std::string, std::string>& data);
-  bool supportsBrightness();
-  bool supportsColorTemperature();
-  bool supportsColor();
-  int get_hsv_color();
-  Color rgbLightColor();
-  std::string icon();
   void setup_state(light::LightState* state) override;
   void update_state(light::LightState* state) override;
   void publish_api_state(light::LightState* state);
