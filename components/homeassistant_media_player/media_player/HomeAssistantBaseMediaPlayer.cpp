@@ -506,13 +506,13 @@ void HomeAssistantBaseMediaPlayer::toggle_repeat() {
         break;
     }
   }
-  ESP_LOGI(TAG, "toggle_repeat: %s - %s", this->entity_id_.c_str(), repeat_title.c_str());
-  call_homeassistant_service(
-      "media_player.repeat_set",
-      {
-          {"entity_id", this->entity_id_},
-          {"repeat", repeat_title.c_str()},
-      });
+  ESP_LOGI(TAG, "toggle_repeat: %s - %s", this->entity_id_.c_str(),
+           repeat_title.c_str());
+  call_homeassistant_service("media_player.repeat_set",
+                             {
+                                 {"entity_id", this->entity_id_},
+                                 {"repeat", repeat_title.c_str()},
+                             });
 }
 
 void HomeAssistantBaseMediaPlayer::increaseVolume() {

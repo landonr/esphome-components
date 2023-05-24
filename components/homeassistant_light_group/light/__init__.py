@@ -20,6 +20,7 @@ LIGHT_SCHEMA = light.LIGHT_SCHEMA.extend(
 CONFIG_SCHEMA = homeassistant_component.COMPONENT_CONFIG_SCHEMA.extend(LIGHT_SCHEMA)
 
 async def to_code(config):
+    cg.add_build_flag("-DUSE_API_LIGHT")
     var = cg.new_Pvariable(config[CONF_OUTPUT_ID])
     await cg.register_component(var, config)
     await light.register_light(var, config)

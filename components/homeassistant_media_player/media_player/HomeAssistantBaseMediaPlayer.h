@@ -29,12 +29,7 @@ namespace homeassistant_media_player {
 //   MEDIA_ALBUM_ARTIST
 // };
 
-enum MediaPlayerRepeatMode {
-  NOT_SET = 1,
-  OFF = 2,
-  ALL = 3,
-  ONE = 4
-};
+enum MediaPlayerRepeatMode { NOT_SET = 1, OFF = 2, ALL = 3, ONE = 4 };
 
 enum MediaPlayerSupportedFeature {
   PAUSE = 1,
@@ -118,52 +113,48 @@ static std::string supported_feature_string(
 }
 
 static std::map<MediaPlayerSupportedFeature, std::string>
-    supported_feature_string_map = {
-        {PAUSE, "PAUSE"},
-        {SEEK, "SEEK"},
-        {VOLUME_SET, "VOLUME_SET"},
-        {VOLUME_MUTE, "VOLUME_MUTE"},
-        {PREVIOUS_TRACK, "PREVIOUS_TRACK"},
-        {NEXT_TRACK, "NEXT_TRACK"},
-        {TURN_ON, "TURN_ON"},
-        {TURN_OFF, "TURN_OFF"},
-        {PLAY_MEDIA, "PLAY_MEDIA"},
-        {VOLUME_STEP, "VOLUME_STEP"},
-        {SELECT_SOURCE, "SELECT_SOURCE"},
-        {STOP, "STOP"},
-        {CLEAR_PLAYLIST, "CLEAR_PLAYLIST"},
-        {PLAY, "PLAY"},
-        {SHUFFLE_SET, "SHUFFLE_SET"},
-        {SELECT_SOUND_MODE, "SELECT_SOUND_MODE"},
-        {BROWSE_MEDIA, "BROWSE_MEDIA"},
-        {REPEAT_SET, "REPEAT_SET"},
-        {GROUPING, "GROUPING"},
-        {MENU_HOME, "MENU_HOME"}
-};
+    supported_feature_string_map = {{PAUSE, "PAUSE"},
+                                    {SEEK, "SEEK"},
+                                    {VOLUME_SET, "VOLUME_SET"},
+                                    {VOLUME_MUTE, "VOLUME_MUTE"},
+                                    {PREVIOUS_TRACK, "PREVIOUS_TRACK"},
+                                    {NEXT_TRACK, "NEXT_TRACK"},
+                                    {TURN_ON, "TURN_ON"},
+                                    {TURN_OFF, "TURN_OFF"},
+                                    {PLAY_MEDIA, "PLAY_MEDIA"},
+                                    {VOLUME_STEP, "VOLUME_STEP"},
+                                    {SELECT_SOURCE, "SELECT_SOURCE"},
+                                    {STOP, "STOP"},
+                                    {CLEAR_PLAYLIST, "CLEAR_PLAYLIST"},
+                                    {PLAY, "PLAY"},
+                                    {SHUFFLE_SET, "SHUFFLE_SET"},
+                                    {SELECT_SOUND_MODE, "SELECT_SOUND_MODE"},
+                                    {BROWSE_MEDIA, "BROWSE_MEDIA"},
+                                    {REPEAT_SET, "REPEAT_SET"},
+                                    {GROUPING, "GROUPING"},
+                                    {MENU_HOME, "MENU_HOME"}};
 
 static std::map<std::string, MediaPlayerSupportedFeature>
-    supported_feature_item_map = {
-        {"PAUSE", PAUSE},
-        {"SEEK", SEEK},
-        {"VOLUME_SET", VOLUME_SET},
-        {"VOLUME_MUTE", VOLUME_MUTE},
-        {"PREVIOUS_TRACK", PREVIOUS_TRACK},
-        {"NEXT_TRACK", NEXT_TRACK},
-        {"TURN_ON", TURN_ON},
-        {"TURN_OFF", TURN_OFF},
-        {"PLAY_MEDIA", PLAY_MEDIA},
-        {"VOLUME_STEP", VOLUME_STEP},
-        {"SELECT_SOURCE", SELECT_SOURCE},
-        {"STOP", STOP},
-        {"CLEAR_PLAYLIST", CLEAR_PLAYLIST},
-        {"PLAY", PLAY},
-        {"SHUFFLE_SET", SHUFFLE_SET},
-        {"SELECT_SOUND_MODE", SELECT_SOUND_MODE},
-        {"BROWSE_MEDIA", BROWSE_MEDIA},
-        {"REPEAT_SET", REPEAT_SET},
-        {"GROUPING", GROUPING},
-        {"MENU_HOME", MENU_HOME}
-};
+    supported_feature_item_map = {{"PAUSE", PAUSE},
+                                  {"SEEK", SEEK},
+                                  {"VOLUME_SET", VOLUME_SET},
+                                  {"VOLUME_MUTE", VOLUME_MUTE},
+                                  {"PREVIOUS_TRACK", PREVIOUS_TRACK},
+                                  {"NEXT_TRACK", NEXT_TRACK},
+                                  {"TURN_ON", TURN_ON},
+                                  {"TURN_OFF", TURN_OFF},
+                                  {"PLAY_MEDIA", PLAY_MEDIA},
+                                  {"VOLUME_STEP", VOLUME_STEP},
+                                  {"SELECT_SOURCE", SELECT_SOURCE},
+                                  {"STOP", STOP},
+                                  {"CLEAR_PLAYLIST", CLEAR_PLAYLIST},
+                                  {"PLAY", PLAY},
+                                  {"SHUFFLE_SET", SHUFFLE_SET},
+                                  {"SELECT_SOUND_MODE", SELECT_SOUND_MODE},
+                                  {"BROWSE_MEDIA", BROWSE_MEDIA},
+                                  {"REPEAT_SET", REPEAT_SET},
+                                  {"GROUPING", GROUPING},
+                                  {"MENU_HOME", MENU_HOME}};
 
 enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
 

@@ -1,9 +1,15 @@
 #pragma once
+
 #include <memory>
 #include <vector>
 
+#ifdef USE_API_LIGHT
 #include "esphome/components/homeassistant_light_group/light/HomeAssistantLight.h"
+#endif
+
+#include "esphome/components/light/light_state.h"
 #include "esphome/components/sensor/sensor.h"
+#include "esphome/core/color.h"
 #include "esphome/core/component.h"
 
 namespace esphome {
@@ -11,20 +17,26 @@ namespace homeassistant_light_group {
 
 class HomeAssistantLightGroup : public Component, public sensor::Sensor {
  public:
-  std::vector<homeassistant_light::HomeAssistantLightState*> lights;
+  std::vector<light::LightState*> lights;
   bool selectLightDetailAtIndex(int index);
   void clearActiveLight() { _activeLight = NULL; }
-  homeassistant_light::HomeAssistantLight* getActiveLight() {
-    return static_cast<homeassistant_light::HomeAssistantLight*>(
-        _activeLight->get_output());
-  }
+  light::LightState* getActiveLight() { return _activeLight; }
   bool lightDetailSelected = false;
-  void register_light(homeassistant_light::HomeAssistantLightState* newLight);
+  void register_light(light::LightState* newLight);
   void toggleLight(int index);
   float get_setup_priority() const override { return setup_priority::LATE; }
+  void update_color_with_hsv(const float hsv_color, light::LightState* light);
+
+  void decTemperature();
+  void incTemperature();
+  void decBrightness();
+  void incBrightness();
+  void toggle();
+  void decColor();
+  void incColor();
 
  private:
-  homeassistant_light::HomeAssistantLightState* _activeLight = NULL;
+  light::LightState* _activeLight = NULL;
 };
 
 }  // namespace homeassistant_light_group
