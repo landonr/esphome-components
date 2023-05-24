@@ -60,12 +60,11 @@ class MediaPlayerSourceBase : public EntityBase {
   std::vector<std::shared_ptr<MediaPlayerSourceItem>> get_sources() {
     return sources_;
   }
-  
+
  protected:
   std::vector<std::shared_ptr<MediaPlayerSourceItem>> sources_ = {};
   using json_parse_array_t = std::function<void(JsonArray)>;
-  void parse_json_array(const std::string &data, const json_parse_array_t &f);
-
+  void parse_json_array(const std::string& data, const json_parse_array_t& f);
 };
 
 class MediaPlayerSourceAPI : public MediaPlayerSourceBase,
@@ -88,8 +87,8 @@ class MediaPlayerSourceInternal : public MediaPlayerSourceBase {
   }
 
   void set_sources_json_array(const std::string state) {
-    parse_json_array(state, [this](JsonArray object){
-    this->sources_.clear();
+    parse_json_array(state, [this](JsonArray object) {
+      this->sources_.clear();
       for (JsonVariant v : object) {
         std::string sourceName = v.as<std::string>();
         auto newsource =

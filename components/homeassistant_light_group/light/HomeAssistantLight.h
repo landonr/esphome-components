@@ -28,11 +28,6 @@ enum ColorModeType {
 
 class HomeAssistantLightState : public light::LightState {
   using LightState::LightState;
-
-  // LightCall LightState::turn_on() override { return this->make_call().set_state(true); }
-  // LightCall LightState::turn_off() override { return this->make_call().set_state(false); }
-  // LightCall LightState::toggle() override { return this->make_call().set_state(!this->remote_values.is_on()); }
-  // LightCall LightState::make_call() override { return LightCall(this); }
 };
 
 class HomeAssistantLight

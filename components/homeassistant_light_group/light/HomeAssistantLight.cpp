@@ -2,8 +2,8 @@
 #include <set>
 #include <sstream>
 #include <utility>
-#include "esphome/core/log.h"
 #include "../LightExtensions.h"
+#include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_light {
@@ -94,7 +94,8 @@ void HomeAssistantLight::set_color_properties(
 void HomeAssistantLight::publish_api_state(light::LightState* state) {
   next_api_publish_ = false;
   ignore_api_updates_with_seconds(2);
-  ESP_LOGI(TAG, "publish_api_state: %s: new output state", state->get_name().c_str());
+  ESP_LOGI(TAG, "publish_api_state: %s: new output state",
+           state->get_name().c_str());
   if (state->remote_values.is_on()) {
     std::map<std::string, std::string> data = {
         {"entity_id", entity_id_.c_str()}, {"transition", "0"}};
@@ -120,8 +121,8 @@ void HomeAssistantLight::publish_api_state(light::LightState* state) {
 }
 
 void HomeAssistantLight::write_state(light::LightState* state) {
-  ESP_LOGI(TAG, "'%s': Writing state %d - publish api state: %d", get_name().c_str(),
-           state->remote_values.is_on(), next_api_publish_);
+  ESP_LOGI(TAG, "'%s': Writing state %d - publish api state: %d",
+           get_name().c_str(), state->remote_values.is_on(), next_api_publish_);
 
   if (next_api_publish_) {
     publish_api_state(state);
@@ -230,13 +231,15 @@ void HomeAssistantLight::update_color_with_hsv(const float hsv_color) {
 
 void HomeAssistantLight::decColor() {
   float color_step = 360.0f / 20.0f;
-  float hsv_color = std::max(0.1f, get_hsv_color(get_light_state()) - color_step);
+  float hsv_color =
+      std::max(0.1f, get_hsv_color(get_light_state()) - color_step);
   update_color_with_hsv(hsv_color);
 }
 
 void HomeAssistantLight::incColor() {
   float color_step = 360.0f / 20.0f;
-  float hsv_color = std::min(359.9f, get_hsv_color(get_light_state()) + color_step);
+  float hsv_color =
+      std::min(359.9f, get_hsv_color(get_light_state()) + color_step);
   update_color_with_hsv(hsv_color);
 }
 
@@ -248,8 +251,10 @@ void HomeAssistantLight::setAttribute(
 void HomeAssistantLight::state_changed(std::string state) {
   next_api_publish_ = false;
   auto onState = parse_on_off(state.c_str());
-  ESP_LOGI(TAG, "state_changed: '%s': (write %d) state changed to %d - publish disabled", get_name().c_str(),
-           can_update_from_api(), onState);
+  ESP_LOGI(
+      TAG,
+      "state_changed: '%s': (write %d) state changed to %d - publish disabled",
+      get_name().c_str(), can_update_from_api(), onState);
   auto call = this->light_state_->make_call();
   call.set_state(onState == esphome::ParseOnOffState::PARSE_ON);
   if (onState != esphome::ParseOnOffState::PARSE_ON) {
