@@ -18,5 +18,5 @@ MiniEncoderC:
   encoder:
     name: Rotary Encoder
     id: rotary
-    encoder_filter: 2
+    encoder_filter: 2 // (1-100) divides the encoder value to make it less sensitive
 ```
