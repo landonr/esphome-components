@@ -1,0 +1,66 @@
+#pragma once
+
+#include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/i2c/i2c.h"
+#include "esphome/components/sensor/sensor.h"
+#include "esphome/core/automation.h"
+#include "esphome/core/component.h"
+
+namespace esphome {
+namespace miniencoderc {
+
+class MiniEncoderC : public i2c::I2CDevice, public Component {
+ public:
+  void setup() override;
+  void loop() override;
+
+  void set_number(uint8_t number) { number_ = number; }
+  void set_min_value(int32_t min_value) { this->min_value_ = min_value; }
+  void set_max_value(int32_t max_value) { this->max_value_ = max_value; }
+
+  float get_setup_priority() const override;
+
+  void add_on_clockwise_callback(std::function<void()> callback) {
+    this->on_clockwise_callback_.add(std::move(callback));
+  }
+
+  void add_on_anticlockwise_callback(std::function<void()> callback) {
+    this->on_anticlockwise_callback_.add(std::move(callback));
+  }
+
+  void set_encoder(sensor::Sensor* encoder) { this->encoder_value_ = encoder; }
+
+  void set_button(binary_sensor::BinarySensor* button) {
+    this->button_ = button;
+  }
+
+ protected:
+  uint8_t number_{0};
+  int32_t value_{0};
+  int32_t min_value_{INT32_MIN};
+  int32_t max_value_{INT32_MAX};
+
+  CallbackManager<void()> on_clockwise_callback_;
+  CallbackManager<void()> on_anticlockwise_callback_;
+  sensor::Sensor* encoder_value_{nullptr};
+  sensor::Sensor* increment_value_{nullptr};
+  sensor::Sensor* firmware_version_{nullptr};
+  binary_sensor::BinarySensor* button_{nullptr};
+};
+
+class MiniEncoderCClockwiseTrigger : public Trigger<> {
+ public:
+  explicit MiniEncoderCClockwiseTrigger(MiniEncoderC* parent) {
+    parent->add_on_clockwise_callback([this]() { this->trigger(); });
+  }
+};
+
+class MiniEncoderCAnticlockwiseTrigger : public Trigger<> {
+ public:
+  explicit MiniEncoderCAnticlockwiseTrigger(MiniEncoderC* parent) {
+    parent->add_on_anticlockwise_callback([this]() { this->trigger(); });
+  }
+};
+
+}  // namespace miniencoderc
+}  // namespace esphome
