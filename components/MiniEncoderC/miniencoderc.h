@@ -6,6 +6,8 @@
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
 
+// based on https://github.com/m5stack/M5Unit-MiniEncoderC/blob/main/src/Unit_MiniEncoderC.cpp
+
 namespace esphome {
 namespace miniencoderc {
 
