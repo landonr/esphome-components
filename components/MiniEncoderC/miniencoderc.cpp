@@ -57,13 +57,13 @@ void MiniEncoderC::loop() {
   if (this->encoder_value_ != nullptr) {
     if (!this->encoder_value_->has_state() ||
         (this->encoder_value_->state != filtered_value)) {
-      ESP_LOGI(TAG, "MiniEncoderC value: %d filtered = %d", value, filtered_value);
+      ESP_LOGD(TAG, "MiniEncoderC value: %d filtered = %d", value, filtered_value);
       if (this->encoder_value_->state < filtered_value) {
-        ESP_LOGI(TAG, "MiniEncoderC clockwise value: %d", filtered_value);
+        ESP_LOGD(TAG, "MiniEncoderC clockwise value: %d", filtered_value);
         this->encoder_value_->publish_state(filtered_value);
         this->on_clockwise_callback_.call();
       } else {
-        ESP_LOGI(TAG, "MiniEncoderC anticlockwise value: %d", filtered_value);
+        ESP_LOGD(TAG, "MiniEncoderC anticlockwise value: %d", filtered_value);
         this->encoder_value_->publish_state(filtered_value);
         this->on_anticlockwise_callback_.call();
       }
@@ -78,7 +78,7 @@ void MiniEncoderC::loop() {
   bool button_state = data[0] == 0x01;
   if (this->button_ != nullptr) {
     if (!this->button_->has_state() || (this->button_->state != button_state)) {
-      ESP_LOGI(TAG, "MiniEncoderC button: %d", button_state);
+      ESP_LOGD(TAG, "MiniEncoderC button: %d", button_state);
       this->button_->publish_state(button_state);
     }
   }
