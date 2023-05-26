@@ -26,7 +26,22 @@ void MiniEncoderC::setup() {
     this->mark_failed();
     return;
   }
+  setEncoderValue(0);
   ESP_LOGI(TAG, "MiniEncoderC Firmware: %d", firmware);
+}
+
+void MiniEncoderC::setEncoderValue(int32_t value) {
+  uint8_t data[4];
+
+  data[0] = value & 0xff;
+  data[1] = (value >> 8) & 0xff;
+  data[2] = (value >> 16) & 0xff;
+  data[3] = (value >> 24) & 0xff;
+
+  if (this->write_register(MINI_ENCODER_C_ENCODER, data, 4) != i2c::ERROR_OK) {
+    ESP_LOGE(TAG, "MiniEncoderC encoder zero setup failed");
+    this->mark_failed();
+  }
 }
 
 void MiniEncoderC::loop() {
@@ -38,11 +53,11 @@ void MiniEncoderC::loop() {
   }
   int32_t value = data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
 
-  int filtered_value = static_cast<int>(value) * 0.5;
+  int filtered_value = static_cast<int>(value) / this->encoder_filter_;
   if (this->encoder_value_ != nullptr) {
     if (!this->encoder_value_->has_state() ||
         (this->encoder_value_->state != filtered_value)) {
-      ESP_LOGI(TAG, "MiniEncoderC value: %d filtered = %d", filtered_value);
+      ESP_LOGI(TAG, "MiniEncoderC value: %d filtered = %d", value, filtered_value);
       if (this->encoder_value_->state < filtered_value) {
         ESP_LOGI(TAG, "MiniEncoderC clockwise value: %d", filtered_value);
         this->encoder_value_->publish_state(filtered_value);

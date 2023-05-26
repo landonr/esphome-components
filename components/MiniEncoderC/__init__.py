@@ -16,6 +16,7 @@ CONF_ENCODER = "encoder"
 CONF_ON_CLOCKWISE = "on_clockwise"
 CONF_ON_ANTICLOCKWISE = "on_anticlockwise"
 CONF_BUTTON = "button"
+CONF_ENCODER_FILTER = "encoder_filter"
 
 MiniEncoderCClockwiseTrigger = miniencoderc_ns.class_(
     "MiniEncoderCClockwiseTrigger", automation.Trigger
@@ -24,11 +25,8 @@ MiniEncoderCAnticlockwiseTrigger = miniencoderc_ns.class_(
     "MiniEncoderCAnticlockwiseTrigger", automation.Trigger
 )
 
-CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
+ENCODER_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(): cv.declare_id(MiniEncoderC),
-        cv.Optional(CONF_ENCODER): sensor.sensor_schema(),
-        cv.Optional(CONF_BUTTON): binary_sensor.binary_sensor_schema(),
         cv.Optional(CONF_ON_CLOCKWISE): automation.validate_automation(
             {
                 cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
@@ -43,6 +41,22 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
                 ),
             }
         ),
+        cv.Optional(CONF_ON_ANTICLOCKWISE): automation.validate_automation(
+            {
+                cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                    MiniEncoderCAnticlockwiseTrigger
+                ),
+            }
+        ),
+        cv.Optional(CONF_ENCODER_FILTER, default=1): cv.int_range(min=1, max=100),
+    }
+).extend(sensor.sensor_schema())
+
+CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
+    {
+        cv.GenerateID(): cv.declare_id(MiniEncoderC),
+        cv.Optional(CONF_ENCODER): ENCODER_SCHEMA,
+        cv.Optional(CONF_BUTTON): binary_sensor.binary_sensor_schema()
     }
 ).extend(i2c.i2c_device_schema(0x42))
 
@@ -55,21 +69,18 @@ async def to_code(config):
         sens = await sensor.new_sensor(config[CONF_ENCODER])
         cg.add(var.set_encoder(sens))
 
+        encoderConfig = config[CONF_ENCODER]
+
+        if CONF_ENCODER_FILTER in encoderConfig:
+            cg.add(var.set_encoder_filter(encoderConfig[CONF_ENCODER_FILTER]))
+
+        for conf in encoderConfig.get(CONF_ON_CLOCKWISE, []):
+            trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
+            await automation.build_automation(trigger, [], conf)
+        for conf in encoderConfig.get(CONF_ON_ANTICLOCKWISE, []):
+            trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
+            await automation.build_automation(trigger, [], conf)
+
     if CONF_BUTTON in config:
         button = await binary_sensor.new_binary_sensor(config[CONF_BUTTON])
         cg.add(var.set_button(button))
-
-    for conf in config.get(CONF_ON_CLOCKWISE, []):
-        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
-        await automation.build_automation(trigger, [], conf)
-    for conf in config.get(CONF_ON_ANTICLOCKWISE, []):
-        trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
-        await automation.build_automation(trigger, [], conf)
-
-    # if CONF_CHARGER_CONNECTED in config:
-    #     sens = await binary_sensor.new_binary_sensor(config[CONF_CHARGER_CONNECTED])
-    #     cg.add(var.set_charger_connected(sens))
-
-    # if CONF_CHARGE_FULL in config:
-    #     sens = await binary_sensor.new_binary_sensor(config[CONF_CHARGE_FULL])
-    #     cg.add(var.set_charge_full(sens))

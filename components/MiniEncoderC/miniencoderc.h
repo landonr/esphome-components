@@ -34,9 +34,14 @@ class MiniEncoderC : public i2c::I2CDevice, public Component {
     this->button_ = button;
   }
 
+  void set_encoder_filter(int encoder_filter) {
+    this->encoder_filter_ = encoder_filter;
+  }
+
  protected:
   uint8_t number_{0};
   int32_t value_{0};
+  int encoder_filter_ = 1;
   int32_t min_value_{INT32_MIN};
   int32_t max_value_{INT32_MAX};
 
@@ -46,6 +51,7 @@ class MiniEncoderC : public i2c::I2CDevice, public Component {
   sensor::Sensor* increment_value_{nullptr};
   sensor::Sensor* firmware_version_{nullptr};
   binary_sensor::BinarySensor* button_{nullptr};
+  void setEncoderValue(int32_t value);
 };
 
 class MiniEncoderCClockwiseTrigger : public Trigger<> {
