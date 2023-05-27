@@ -1,4 +1,4 @@
-#include "HomeAssistantTVRokuMediaPlayer.h"
+#include "HomeAssistantTVAndroidMediaPlayer.h"
 #include "JSONTextHelpers.h"
 #include "esphome/core/log.h"
 
