@@ -1,8 +1,13 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import binary_sensor, i2c, sensor
-from esphome.const import CONF_ID, CONF_TRIGGER_ID
+from esphome.const import (
+    CONF_ID, 
+    CONF_TRIGGER_ID
+)
+from esphome.components.MiniEncoderC.light import MiniEncoderCLightOutput
 from esphome import automation
+from esphome.components.light import LightState
 
 MULTI_CONF = True
 
@@ -17,6 +22,7 @@ CONF_ON_CLOCKWISE = "on_clockwise"
 CONF_ON_ANTICLOCKWISE = "on_anticlockwise"
 CONF_BUTTON = "button"
 CONF_ENCODER_FILTER = "encoder_filter"
+CONF_LIGHT = "light"
 
 MiniEncoderCClockwiseTrigger = miniencoderc_ns.class_(
     "MiniEncoderCClockwiseTrigger", automation.Trigger
@@ -56,7 +62,8 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(MiniEncoderC),
         cv.Optional(CONF_ENCODER): ENCODER_SCHEMA,
-        cv.Optional(CONF_BUTTON): binary_sensor.binary_sensor_schema()
+        cv.Optional(CONF_BUTTON): binary_sensor.binary_sensor_schema(),
+        # cv.GenerateID(CONF_LIGHT): cv.use_id(MiniEncoderCLightOutput),
     }
 ).extend(i2c.i2c_device_schema(0x42))
 
@@ -84,3 +91,12 @@ async def to_code(config):
     if CONF_BUTTON in config:
         button = await binary_sensor.new_binary_sensor(config[CONF_BUTTON])
         cg.add(var.set_button(button))
+
+    # if CONF_LIGHT in config:
+    #     light_config = config[CONF_LIGHT]
+    #     output = cg.new_Pvariable(light_config[CONF_OUTPUT_ID])
+    #     await cg.register_component(output, light_config)
+    #     await light.register_light(output, light_config)
+    #     cg.add(var.set_light(output))
+        # lightState = await cg.get_variable(config[CONF_ID])
+        # cg.add(lightState.set_internal(True))
