@@ -63,7 +63,6 @@ CONFIG_SCHEMA = cv.COMPONENT_SCHEMA.extend(
         cv.GenerateID(): cv.declare_id(MiniEncoderC),
         cv.Optional(CONF_ENCODER): ENCODER_SCHEMA,
         cv.Optional(CONF_BUTTON): binary_sensor.binary_sensor_schema(),
-        # cv.GenerateID(CONF_LIGHT): cv.use_id(MiniEncoderCLightOutput),
     }
 ).extend(i2c.i2c_device_schema(0x42))
 
@@ -91,12 +90,3 @@ async def to_code(config):
     if CONF_BUTTON in config:
         button = await binary_sensor.new_binary_sensor(config[CONF_BUTTON])
         cg.add(var.set_button(button))
-
-    # if CONF_LIGHT in config:
-    #     light_config = config[CONF_LIGHT]
-    #     output = cg.new_Pvariable(light_config[CONF_OUTPUT_ID])
-    #     await cg.register_component(output, light_config)
-    #     await light.register_light(output, light_config)
-    #     cg.add(var.set_light(output))
-        # lightState = await cg.get_variable(config[CONF_ID])
-        # cg.add(lightState.set_internal(True))

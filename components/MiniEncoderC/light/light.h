@@ -1,11 +1,11 @@
 #pragma once
 
-#include "esphome/core/component.h"
-#include "esphome/components/light/light_output.h"
-#include "esphome/components/light/light_traits.h"
-#include "esphome/components/light/light_state.h"
 #include "esphome/components/i2c/i2c.h"
+#include "esphome/components/light/light_output.h"
+#include "esphome/components/light/light_state.h"
+#include "esphome/components/light/light_traits.h"
 #include "esphome/core/color.h"
+#include "esphome/core/component.h"
 
 #include <vector>
 
@@ -16,12 +16,11 @@ namespace miniencoderc {
 static const char* const LIGHT_TAG = "mini_encoder_c_light";
 static const uint8_t MINI_ENCODER_C_LIGHT = 0x30;
 
-class MiniEncoderCLightOutput : public Component, public light::LightOutput, public i2c::I2CDevice {
+class MiniEncoderCLightOutput : public Component,
+                                public light::LightOutput,
+                                public i2c::I2CDevice {
  public:
-
-  float get_setup_priority() const {
-    return setup_priority::IO;
-  }
+  float get_setup_priority() const { return setup_priority::IO; }
 
   void setup() override {
     uint8_t data[4];
@@ -38,11 +37,12 @@ class MiniEncoderCLightOutput : public Component, public light::LightOutput, pub
   light::LightTraits get_traits() override {
     // return the traits this light supports
     auto traits = light::LightTraits();
-    traits.set_supported_color_modes({light::ColorMode::RGB, light::ColorMode::BRIGHTNESS});
+    traits.set_supported_color_modes(
+        {light::ColorMode::RGB, light::ColorMode::BRIGHTNESS});
     return traits;
   }
 
-  void write_state(light::LightState *state) override {
+  void write_state(light::LightState* state) override {
     // This will be called by the light to get a new state to be written.
     float red, green, blue;
     // use any of the provided current_values methods
@@ -60,5 +60,5 @@ class MiniEncoderCLightOutput : public Component, public light::LightOutput, pub
   }
 };
 
-}
-}
+}  // namespace miniencoderc
+}  // namespace esphome
