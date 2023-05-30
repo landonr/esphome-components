@@ -15,8 +15,8 @@ class HomeAssistantSwitch
  public:
   void set_attribute(const std::string& attribute) { attribute_ = attribute; }
   void setup() override;
+  void publish_api_state(bool state);
   void write_state(bool state) override;
-  void toggleSwitch();
 
  private:
   optional<std::string> attribute_;
