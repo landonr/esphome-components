@@ -12,7 +12,6 @@ class HomeAssistantSpeakerMediaPlayer : public HomeAssistantBaseMediaPlayer {
  public:
   // std::vector<std::string> groupMembers;
   std::string media_album_name = "";
-  HomeAssistantBaseMediaPlayer* tv{nullptr};
 
   void setup() override;
   void ungroup();
@@ -23,6 +22,7 @@ class HomeAssistantSpeakerMediaPlayer : public HomeAssistantBaseMediaPlayer {
   void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return SpeakerRemotePlayerType; }
   void set_tv(HomeAssistantBaseMediaPlayer* new_tv) { tv = new_tv; }
+  HomeAssistantBaseMediaPlayer* get_tv() { return tv; }
   virtual HomeAssistantBaseMediaPlayer* get_parent_media_player() {
     if (tv != NULL)
       return tv;
@@ -30,6 +30,7 @@ class HomeAssistantSpeakerMediaPlayer : public HomeAssistantBaseMediaPlayer {
   }
 
  private:
+  HomeAssistantBaseMediaPlayer* tv{nullptr};
   void subscribe_source() override;
   void media_album_changed(std::string state);
   void media_content_id_changed(std::string state);

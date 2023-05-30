@@ -67,12 +67,12 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
         // try again later
         return;
       } else if (speaker->mediaSource == TVRemotePlayerMediaSource &&
-                 speaker->tv) {
+                 speaker->get_tv()) {
         if (!newActivePlayer ||
             (newActivePlayer &&
-             newActivePlayer->playerState < speaker->tv->playerState)) {
+             newActivePlayer->playerState < speaker->get_tv()->playerState)) {
           // set player to speaker's soundbar
-          newActivePlayer = speaker->tv;
+          newActivePlayer = speaker->get_tv();
         }
       } else if (newActivePlayer) {
         if (newActivePlayer->playerState < speaker->playerState &&
@@ -256,6 +256,7 @@ std::string HomeAssistantMediaPlayerGroup::muteString() {
 
 double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
   if (active_player_ == nullptr) {
+    ESP_LOGI(TAG, "getVolumeLevel: no active player");
     return 0;
   }
   if (active_player_->get_player_type() ==
@@ -263,17 +264,23 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
     HomeAssistantTVMediaPlayer* activeTV =
         static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
     if (activeTV != NULL) {
-      if (activeTV->get_parent_media_player() != NULL) {
+      if (activeTV->get_soundbar() != NULL) {
         HomeAssistantSpeakerMediaPlayer* tvSpeaker =
             static_cast<HomeAssistantSpeakerMediaPlayer*>(
-                activeTV->get_parent_media_player());
+                activeTV->get_soundbar());
         if (tvSpeaker->volume != -1) {
           double volume = tvSpeaker->volume * 100;
           return volume;
+        } else {
+          ESP_LOGI(TAG, "getVolumeLevel: tv volume isnt -1 %d",
+                   tvSpeaker->volume);
         }
       } else {
+        ESP_LOGI(TAG, "getVolumeLevel: tv has no parent");
         return -1;
       }
+    } else {
+      ESP_LOGI(TAG, "getVolumeLevel: player isnt tv");
     }
   } else {
     HomeAssistantSpeakerMediaPlayer* activeSpeaker =
@@ -400,8 +407,8 @@ std::string HomeAssistantMediaPlayerGroup::mediaTitleString() {
       if (active_player_->mediaSource == TVRemotePlayerMediaSource) {
         HomeAssistantSpeakerMediaPlayer* activeSpeaker =
             static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);
-        if (activeSpeaker != NULL && activeSpeaker->tv != NULL) {
-          return activeSpeaker->tv->mediaTitleString();
+        if (activeSpeaker != NULL && activeSpeaker->get_tv() != NULL) {
+          return activeSpeaker->get_tv()->mediaTitleString();
         }
       }
       return active_player_->mediaTitleString();

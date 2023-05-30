@@ -38,8 +38,13 @@ class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
   void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return TVRemotePlayerType; }
   void player_source_changed(std::string state);
+  void set_soundbar(HomeAssistantBaseMediaPlayer* new_soundbar) {
+    soundbar_ = new_soundbar;
+  }
+  HomeAssistantBaseMediaPlayer* get_soundbar() { return soundbar_; }
 
  protected:
+  HomeAssistantBaseMediaPlayer* soundbar_{nullptr};
   void subscribe_source() override;
   void sources_changed(std::string state) override;
   void subscribe_sources() override;
