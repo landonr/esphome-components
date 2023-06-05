@@ -8,7 +8,7 @@
 namespace esphome {
 namespace homeassistant_media_player {
 
-class HomeAssistantTVRokuMediaPlayer : public HomeAssistantTVMediaPlayer {
+class HomeAssistantTVAndroidMediaPlayer : public HomeAssistantTVMediaPlayer {
  public:
   void setup() override;
 
