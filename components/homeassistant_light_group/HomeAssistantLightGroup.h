@@ -19,6 +19,7 @@ class HomeAssistantLightGroup : public Component, public sensor::Sensor {
  public:
   std::vector<light::LightState*> lights;
   bool selectLightDetailAtIndex(int index);
+  bool selectLightDetail(light::LightState* new_active_light);
   void clearActiveLight() { _activeLight = NULL; }
   light::LightState* getActiveLight() { return _activeLight; }
   bool lightDetailSelected = false;
