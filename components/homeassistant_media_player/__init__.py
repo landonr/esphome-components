@@ -9,11 +9,13 @@ from esphome.components.homeassistant_media_player.media_player import (
     HomeAssistantTVRokuMediaPlayer,
     HomeAssistantTVKodiMediaPlayer,
     HomeAssistantTVSamsungMediaPlayer,
+    HomeAssistantTVAndroidMediaPlayer,
     CONF_SPEAKER,
     CONF_TV,
     CONF_ROKU,
     CONF_KODI,
     CONF_SAMSUNG,
+    CONF_ANDROID_TV,
 )
 from esphome.components import sensor
 
@@ -46,6 +48,11 @@ HOMEASSISTANT_MEDIA_PLAYER_REFERENCE_SCHEMA = cv.typed_schema(
         CONF_SAMSUNG: cv.Schema(
             {
                 cv.GenerateID(CONF_ID): cv.use_id(HomeAssistantTVSamsungMediaPlayer),
+            }
+        ),
+        CONF_ANDROID_TV: cv.Schema(
+            {
+                cv.GenerateID(CONF_ID): cv.use_id(HomeAssistantTVAndroidMediaPlayer),
             }
         ),
     },

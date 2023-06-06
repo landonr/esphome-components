@@ -1,13 +1,13 @@
-#include "HomeAssistantTVRokuMediaPlayer.h"
+#include "HomeAssistantTVAndroidMediaPlayer.h"
 #include "JSONTextHelpers.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
 
-static const char* const TAG = "homeassistant.media_player_roku";
+static const char* const TAG = "homeassistant.media_player_android";
 
-void HomeAssistantTVRokuMediaPlayer::setup() {
+void HomeAssistantTVAndroidMediaPlayer::setup() {
   supported_features_.push_back(
       std::make_shared<MediaPlayerSupportedFeature>(TV_BACK));
   supported_features_.push_back(
@@ -19,31 +19,31 @@ void HomeAssistantTVRokuMediaPlayer::setup() {
   HomeAssistantTVMediaPlayer::setup();
 }
 
-std::string HomeAssistantTVRokuMediaPlayer::stringForRemoteCommand(
+std::string HomeAssistantTVAndroidMediaPlayer::stringForRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
   switch (command) {
     case UP:
-      return "up";
+      return "DPAD_UP";
     case DOWN:
-      return "down";
+      return "DPAD_DOWN";
     case LEFT:
-      return "left";
+      return "DPAD_LEFT";
     case RIGHT:
-      return "right";
+      return "DPAD_RIGHT";
     case SELECT:
-      return "select";
+      return "DPAD_CENTER";
     case BACK:
-      return "back";
+      return "BACK";
     case HOME:
-      return "home";
+      return "HOME";
     case POWER:
       return "power";
     case VOLUME_UP:
-      return "volume_up";
+      return "VOLUME_UP";
     case VOLUME_DOWN:
-      return "volume_down";
+      return "VOLUME_DOWN";
     case PAUSE_COMMAND:
-      return "pause";
+      return "MEDIA_PLAY_PAUSE";
   }
   return "";
 }

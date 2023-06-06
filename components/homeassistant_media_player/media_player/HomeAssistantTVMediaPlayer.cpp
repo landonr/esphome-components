@@ -53,11 +53,6 @@ void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
   device_sources->set_sources_json_array(replaceAll(state, "\\xa0", " "));
 }
 
-void HomeAssistantTVMediaPlayer::tvRemoteCommand(
-    MediaPlayerTVRemoteCommand command) {
-  ESP_LOGI(TAG, "tvRemoteCommand: %d", command);
-}
-
 void HomeAssistantTVMediaPlayer::increaseVolume() {
   tvRemoteCommand(VOLUME_UP);
 }
@@ -128,6 +123,19 @@ void HomeAssistantTVMediaPlayer::control(
     // }
   }
   this->publish_state();
+}
+
+void HomeAssistantTVMediaPlayer::tvRemoteCommand(
+    MediaPlayerTVRemoteCommand command) {
+  std::string remoteName = entity_id_.substr(12).insert(0, "remote");
+  auto commandString = stringForRemoteCommand(command);
+  ESP_LOGI(TAG, "tvRemoteCommand: %s, %s", commandString.c_str(),
+           remoteName.c_str());
+  call_homeassistant_service("remote.send_command",
+                             {
+                                 {"entity_id", remoteName},
+                                 {"command", commandString.c_str()},
+                             });
 }
 
 }  // namespace homeassistant_media_player
