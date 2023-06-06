@@ -1,4 +1,5 @@
 import esphome.codegen as cg
+from esphome.components import sensor
 import esphome.config_validation as cv
 from esphome.const import CONF_ID, CONF_ENTITY_ID, CONF_NAME
 from esphome.components.homeassistant_media_player.media_player import (
@@ -17,8 +18,8 @@ from esphome.components.homeassistant_media_player.media_player import (
 from esphome.components import sensor
 
 CONF_MEDIA_PLAYERS = "media_players"
-
-DEPENDENCIES = ["api"]
+AUTO_LOAD = ["sensor"]
+DEPENDENCIES = ["api", "sensor"]
 
 HOMEASSISTANT_MEDIA_PLAYER_REFERENCE_SCHEMA = cv.typed_schema(
     {

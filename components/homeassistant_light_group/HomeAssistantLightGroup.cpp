@@ -22,8 +22,10 @@ bool HomeAssistantLightGroup::selectLightDetailAtIndex(int index) {
   return false;
 }
 
-bool HomeAssistantLightGroup::selectLightDetail(light::LightState* new_active_light) {
-  auto output = static_cast<light::LightOutput*>(new_active_light->get_output());
+bool HomeAssistantLightGroup::selectLightDetail(
+    light::LightState* new_active_light) {
+  auto output =
+      static_cast<light::LightOutput*>(new_active_light->get_output());
   if (supportsBrightness(new_active_light)) {
     _activeLight = new_active_light;
     return true;
