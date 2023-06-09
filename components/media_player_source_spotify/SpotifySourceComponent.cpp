@@ -29,8 +29,7 @@ void SpotifySourceComponent::playlists_changed(std::string state) {
       ESP_LOGD(TAG, "new JSON key value %s %s", key.c_str(), value.c_str());
       auto newsource =
           std::make_shared<media_player_source::MediaPlayerSourceItem>(
-              value, key,
-              media_player_source::PlaylistRemotePlayerSourceType);
+              value, key, media_player_source::PlaylistRemotePlayerSourceType);
       this->sources_.push_back(newsource);
     }
   });

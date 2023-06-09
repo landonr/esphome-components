@@ -101,10 +101,12 @@ class HomeAssistantCover
       } else {
         if (this->position == cover::COVER_CLOSED) {
           ESP_LOGI(TAG, "control: '%s', can update: %d, opening %f",
-                   this->get_name().c_str(), can_update_from_api(), this->position);
+                   this->get_name().c_str(), can_update_from_api(),
+                   this->position);
         } else {
           ESP_LOGI(TAG, "control: '%s', can update: %d, closing %f",
-                   this->get_name().c_str(), can_update_from_api(), this->position);
+                   this->get_name().c_str(), can_update_from_api(),
+                   this->position);
         }
       }
     }
@@ -113,8 +115,11 @@ class HomeAssistantCover
       if (pos == this->position) {
         // already at target
       } else {
-        ESP_LOGI(TAG, "control: '%s', can update: %d, setting position new: %f old: %f",
-                 this->get_name().c_str(), can_update_from_api(), pos, this->position);
+        ESP_LOGI(
+            TAG,
+            "control: '%s', can update: %d, setting position new: %f old: %f",
+            this->get_name().c_str(), can_update_from_api(), pos,
+            this->position);
         this->position = pos;
       }
     }

@@ -13,7 +13,8 @@ class HomeAssistantTVAndroidMediaPlayer : public HomeAssistantTVMediaPlayer {
   void setup() override;
 
  protected:
-  std::string stringForRemoteCommand(MediaPlayerTVRemoteCommand command) override;
+  std::string stringForRemoteCommand(
+      MediaPlayerTVRemoteCommand command) override;
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

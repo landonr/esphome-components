@@ -17,7 +17,8 @@ class HomeAssistantTVSamsungMediaPlayer : public HomeAssistantTVMediaPlayer {
   void subscribe_media_artist() override;
 
  protected:
-  std::string stringForRemoteCommand(MediaPlayerTVRemoteCommand command) override;
+  std::string stringForRemoteCommand(
+      MediaPlayerTVRemoteCommand command) override;
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

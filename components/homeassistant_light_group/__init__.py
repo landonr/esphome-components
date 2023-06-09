@@ -34,7 +34,6 @@ CONFIG_SCHEMA = cv.Schema(
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
-
 async def to_code(config):
     cg.add_build_flag("-DUSE_LIGHT_GROUP")
     var = cg.new_Pvariable(config[CONF_ID])
