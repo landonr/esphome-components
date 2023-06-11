@@ -79,7 +79,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   std::string mediaSubtitleString();
   void sendActivePlayerRemoteCommand(MediaPlayerTVRemoteCommand command);
   void call_feature(MediaPlayerSupportedFeature feature);
-  std::vector<media_player_source::MediaPlayerSourceBase*>
+  std::vector<media_player_source::MediaPlayerSourceBase*>*
   activePlayerSources();
   void syncActivePlayer(RemotePlayerState state);
   void playSource(media_player_source::MediaPlayerSourceItem* source);

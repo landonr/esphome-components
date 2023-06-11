@@ -10,7 +10,6 @@ namespace homeassistant_media_player {
 
 class HomeAssistantSpeakerMediaPlayer : public HomeAssistantBaseMediaPlayer {
  public:
-  // std::vector<std::string> groupMembers;
   std::string media_album_name = "";
 
   void setup() override;

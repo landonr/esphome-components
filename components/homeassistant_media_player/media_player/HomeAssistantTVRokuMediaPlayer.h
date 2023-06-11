@@ -15,6 +15,10 @@ class HomeAssistantTVRokuMediaPlayer : public HomeAssistantTVMediaPlayer {
  protected:
   std::string stringForRemoteCommand(
       MediaPlayerTVRemoteCommand command) override;
+  void playMedia(media_player_source::MediaPlayerSourceItem* source) override;
+
+ private:
+  std::string idForSourceApp(media_player_source::AppPlayerSourceType source);
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

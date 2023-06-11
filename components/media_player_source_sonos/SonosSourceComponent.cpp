@@ -23,7 +23,7 @@ void SonosSourceComponent::sonos_favorites_changed(std::string state) {
       auto newsource =
           std::make_shared<media_player_source::MediaPlayerSourceItem>(
               value, key,
-              media_player_source::FavoriteItemIDRemotePlayerSourceType);
+              media_player_source::MediaPlayerSourceTypeFavoriteItemID);
       this->sources_.push_back(newsource);
     }
   });

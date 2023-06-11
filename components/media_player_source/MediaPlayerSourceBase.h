@@ -9,10 +9,25 @@ namespace esphome {
 namespace media_player_source {
 
 enum MediaPlayerSourceType {
-  MusicRemotePlayerSourceType,
-  FavoriteItemIDRemotePlayerSourceType,
-  SourceRemotePlayerSourceType,
-  PlaylistRemotePlayerSourceType
+  MediaPlayerSourceTypeMusic,
+  MediaPlayerSourceTypeFavoriteItemID,
+  MediaPlayerSourceTypeSource,
+  MediaPlayerSourceTypePlaylist,
+  MediaPlayerSourceTypeApp,
+  MediaPlayerSourceTypeChannel,
+  MediaPlayerSourceTypeURL
+};
+
+enum AppPlayerSourceType {
+  AppPlayerSourceTypeNone,
+  AppPlayerSourceTypeYouTube,
+  AppPlayerSourceTypeSpotify,
+  AppPlayerSourceTypeNetflix,
+  AppPlayerSourceTypePlex,
+  AppPlayerSourceTypeDisneyPlus,
+  AppPlayerSourceTypeHulu,
+  AppPlayerSourceTypePrimeVideo,
+  AppPlayerSourceTypeHBO
 };
 
 class MediaPlayerSourceItem {
@@ -32,17 +47,51 @@ class MediaPlayerSourceItem {
   void set_media_type(const MediaPlayerSourceType& media_type) {
     media_type_ = media_type;
   }
+  void set_app_type(const AppPlayerSourceType& app_type) {
+    app_type_ = app_type;
+  }
+  AppPlayerSourceType get_app_type() { return app_type_; }
 
   std::string sourceTypeString() {
     switch (media_type_) {
-      case MusicRemotePlayerSourceType:
+      case MediaPlayerSourceTypeMusic:
         return "music";
-      case FavoriteItemIDRemotePlayerSourceType:
+      case MediaPlayerSourceTypeFavoriteItemID:
         return "favorite_item_id";
-      case SourceRemotePlayerSourceType:
+      case MediaPlayerSourceTypeSource:
         return "source";
-      case PlaylistRemotePlayerSourceType:
+      case MediaPlayerSourceTypePlaylist:
         return "playlist";
+      case MediaPlayerSourceTypeApp:
+        return "app";
+      case MediaPlayerSourceTypeChannel:
+        return "channel";
+      case MediaPlayerSourceTypeURL:
+        return "url";
+    }
+    return "";
+  }
+
+  std::string sourceAppString() {
+    switch (app_type_) {
+      case AppPlayerSourceTypeNone:
+        return "none";
+      case AppPlayerSourceTypeYouTube:
+        return "youtube";
+      case AppPlayerSourceTypeSpotify:
+        return "spotify";
+      case AppPlayerSourceTypeNetflix:
+        return "netflix";
+      case AppPlayerSourceTypePlex:
+        return "plex";
+      case AppPlayerSourceTypeDisneyPlus:
+        return "disney_plus";
+      case AppPlayerSourceTypeHulu:
+        return "hulu";
+      case AppPlayerSourceTypePrimeVideo:
+        return "prime_video";
+      case AppPlayerSourceTypeHBO:
+        return "hbo";
     }
     return "";
   }
@@ -51,14 +100,15 @@ class MediaPlayerSourceItem {
   std::string name_ = "no";
   std::string media_content_id_ = "no";
   MediaPlayerSourceType media_type_;
+  AppPlayerSourceType app_type_ = AppPlayerSourceTypeNone;
 };
 
 class MediaPlayerSourceBase : public EntityBase {
  public:
   // void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
   // std::string get_entity_id() { return entity_id_; }
-  std::vector<std::shared_ptr<MediaPlayerSourceItem>> get_sources() {
-    return sources_;
+  std::vector<std::shared_ptr<MediaPlayerSourceItem>>* get_sources() {
+    return &sources_;
   }
 
  protected:
@@ -95,7 +145,7 @@ class MediaPlayerSourceInternal : public MediaPlayerSourceBase {
             std::make_shared<media_player_source::MediaPlayerSourceItem>(
                 sourceName, sourceName,
                 media_player_source::MediaPlayerSourceType::
-                    SourceRemotePlayerSourceType);
+                    MediaPlayerSourceTypeSource);
         this->sources_.push_back(newsource);
       }
     });

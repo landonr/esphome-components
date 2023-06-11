@@ -96,7 +96,7 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
       tempLoadedPlayers++;
       ESP_LOGI(TAG, "findActivePlayer: loaded player %s",
                media_player->get_entity_id().c_str());
-      loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
+      loadedPlayers = std::max(tempLoadedPlayers, loadedPlayers);
     } else {
       HomeAssistantTVMediaPlayer* tv =
           static_cast<HomeAssistantTVMediaPlayer*>(media_player);
@@ -119,7 +119,7 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
       tempLoadedPlayers++;
       ESP_LOGD(TAG, "findActivePlayer: loaded player %s",
                media_player->get_entity_id().c_str());
-      loadedPlayers = max(tempLoadedPlayers, loadedPlayers);
+      loadedPlayers = std::max(tempLoadedPlayers, loadedPlayers);
     }
   }
   if (newActivePlayer) {
@@ -272,7 +272,7 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
           double volume = tvSpeaker->volume * 100;
           return volume;
         } else {
-          ESP_LOGI(TAG, "getVolumeLevel: tv volume isnt -1 %d",
+          ESP_LOGI(TAG, "getVolumeLevel: tv volume isnt -1 %f",
                    tvSpeaker->volume);
         }
       } else {
@@ -484,9 +484,9 @@ void HomeAssistantMediaPlayerGroup::call_feature(
   }
 }
 
-std::vector<media_player_source::MediaPlayerSourceBase*>
+std::vector<media_player_source::MediaPlayerSourceBase*>*
 HomeAssistantMediaPlayerGroup::activePlayerSources() {
-  return active_player_->sources;
+  return &active_player_->sources;
 }
 
 // private

@@ -267,13 +267,13 @@ class HomeAssistantBaseMediaPlayer
 
   virtual void group_members_changed(std::string state);
   virtual void subscribe_media_artist();
+  virtual void playMedia(media_player_source::MediaPlayerSourceItem* source);
 
  private:
   RemotePlayerType player_type_;
   HomeAssistantBaseMediaPlayer* parent_media_player_;
 
   void selectSource(media_player_source::MediaPlayerSourceItem* source);
-  void playMedia(media_player_source::MediaPlayerSourceItem* source);
   void tokenize(std::string const& str, std::string delim,
                 std::vector<std::string>* out);
   std::string filter(std::string str);

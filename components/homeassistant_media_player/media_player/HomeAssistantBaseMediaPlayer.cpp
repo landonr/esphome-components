@@ -30,12 +30,13 @@ void HomeAssistantBaseMediaPlayer::playSource(
            source->get_media_content_id().c_str(),
            source->sourceTypeString().c_str(), source->get_media_type());
   switch (source->get_media_type()) {
-    case media_player_source::MusicRemotePlayerSourceType:
-    case media_player_source::FavoriteItemIDRemotePlayerSourceType:
-    case media_player_source::PlaylistRemotePlayerSourceType:
+    case media_player_source::MediaPlayerSourceTypeMusic:
+    case media_player_source::MediaPlayerSourceTypeFavoriteItemID:
+    case media_player_source::MediaPlayerSourceTypePlaylist:
+    case media_player_source::MediaPlayerSourceTypeApp:
       playMedia(source);
       break;
-    case media_player_source::SourceRemotePlayerSourceType:
+    case media_player_source::MediaPlayerSourceTypeSource:
       selectSource(source);
       break;
   }
@@ -501,6 +502,7 @@ void HomeAssistantBaseMediaPlayer::toggle_repeat() {
         repeat_title = "one";
         break;
       case ONE:
+      case NOT_SET:
         repeat_mode_ = OFF;
         repeat_title = "off";
         break;

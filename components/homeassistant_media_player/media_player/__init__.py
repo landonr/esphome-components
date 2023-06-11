@@ -5,7 +5,7 @@ from esphome.const import CONF_ENTITY_ID, CONF_NAME, CONF_ID, CONF_INTERNAL, CON
 
 homeassistant_media_player_ns = cg.esphome_ns.namespace("homeassistant_media_player")
 
-AUTO_LOAD = ['media_player', 'homeassistant_component', 'media_player_source']
+AUTO_LOAD = ['media_player', 'homeassistant_component', 'media_player_source', 'json']
 
 HomeAssistantBaseMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantBaseMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantSpeakerMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantSpeakerMediaPlayer", media_player.MediaPlayer, cg.Component)

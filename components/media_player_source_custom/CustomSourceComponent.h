@@ -11,7 +11,8 @@ class CustomSourceComponent : public media_player_source::MediaPlayerSourceBase,
   void setup() override;
 
   void add_source(std::string name, std::string media_id,
-                  media_player_source::MediaPlayerSourceType media_type);
+                  media_player_source::MediaPlayerSourceType media_type,
+                  media_player_source::AppPlayerSourceType app_type);
 };
 }  // namespace media_player_source_custom
 }  // namespace esphome
