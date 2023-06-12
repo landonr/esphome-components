@@ -74,6 +74,7 @@
         "variant": "cpp",
         "__nullptr": "cpp",
         "__string": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "__memory": "cpp"
     }
 }
