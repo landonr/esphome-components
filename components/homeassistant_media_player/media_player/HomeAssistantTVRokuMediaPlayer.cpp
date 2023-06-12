@@ -48,7 +48,8 @@ std::string HomeAssistantTVRokuMediaPlayer::stringForRemoteCommand(
   return "";
 }
 
-std::string HomeAssistantTVRokuMediaPlayer::idForSourceApp(media_player_source::AppPlayerSourceType source) {
+std::string HomeAssistantTVRokuMediaPlayer::idForSourceApp(
+    media_player_source::AppPlayerSourceType source) {
   switch (source) {
     case media_player_source::AppPlayerSourceType::AppPlayerSourceTypeNone:
       return "none";
@@ -90,7 +91,8 @@ void HomeAssistantTVRokuMediaPlayer::playMedia(
           "script.homething_roku_play_media",
           {
               {"entity_id", this->entity_id_.c_str()},
-              {"media_content_id", idForSourceApp(source->get_app_type()).c_str()},
+              {"media_content_id",
+               idForSourceApp(source->get_app_type()).c_str()},
               {"media_content_type", source->sourceTypeString().c_str()},
               {"content_id", source->get_media_content_id().c_str()},
               {"media_type", "live"},
