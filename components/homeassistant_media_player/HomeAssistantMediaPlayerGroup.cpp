@@ -466,6 +466,12 @@ void HomeAssistantMediaPlayerGroup::call_feature(
     case NEXT_TRACK:
       active_player_->nextTrack();
       break;
+    case VOLUME_DOWN:
+      decreaseSpeakerVolume();
+      break;
+    case VOLUME_UP:
+      increaseSpeakerVolume();
+      break;
     case MENU_HOME:
     case VOLUME_SET:
     case SEEK:

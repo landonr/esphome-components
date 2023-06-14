@@ -17,8 +17,8 @@ enum MediaPlayerTVRemoteCommand {
   BACK,
   HOME,
   POWER,
-  VOLUME_UP,
-  VOLUME_DOWN,
+  VOLUME_UP_COMMAND,
+  VOLUME_DOWN_COMMAND,
   PAUSE_COMMAND
 };
 

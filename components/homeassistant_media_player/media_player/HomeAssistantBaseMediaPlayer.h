@@ -10,151 +10,12 @@
 #include "esphome/components/media_player/media_player.h"
 #include "esphome/components/media_player_source/MediaPlayerSourceBase.h"
 #include "esphome/core/log.h"
+#include "MediaPlayerSupportedFeature.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
 
-// enum MediaPlayerSupportedState {
-//   MEDIA_CONTENT_ID,
-//   MEDIA_CONTENT_TYPE,
-//   MEDIA_SERIES_TITLE,
-//   MEDIA_SEASON,
-//   MEDIA_EPISODE,
-//   MEDIA_CONTENT_RATING,
-//   MEDIA_LIBRARY_TITLE,
-//   MEDIA_SUMMARY,
-//   MEDIA_TITLE,
-//   MEDIA_ARTIST,
-//   MEDIA_ALBUM_NAME,
-//   MEDIA_ALBUM_ARTIST
-// };
-
 enum MediaPlayerRepeatMode { NOT_SET = 1, OFF = 2, ALL = 3, ONE = 4 };
-
-enum MediaPlayerSupportedFeature {
-  PAUSE = 1,
-  SEEK = 2,
-  VOLUME_SET = 4,
-  VOLUME_MUTE = 8,
-  PREVIOUS_TRACK = 16,
-  NEXT_TRACK = 32,
-  TURN_ON = 128,
-  TURN_OFF = 256,
-  PLAY_MEDIA = 512,
-  VOLUME_STEP = 1024,
-  SELECT_SOURCE = 2048,
-  STOP = 4096,
-  CLEAR_PLAYLIST = 8192,
-  PLAY = 16384,
-  SHUFFLE_SET = 32768,
-  SELECT_SOUND_MODE = 65536,
-  BROWSE_MEDIA = 131072,
-  REPEAT_SET = 262144,
-  GROUPING = 524288,
-
-  // bonus features
-  TV_BACK = 9,
-  TV_HOME = 10,
-  MENU_HOME = 11,
-  REMOTE_MODE = 12
-};
-
-static std::string supported_feature_string(
-    MediaPlayerSupportedFeature feature) {
-  switch (feature) {
-    case PAUSE:
-      return "Pause";
-    case SEEK:
-      return "Seek";
-    case VOLUME_SET:
-      return "Volume Set";
-    case VOLUME_MUTE:
-      return "Mute";
-    case PREVIOUS_TRACK:
-      return "Previous";
-    case NEXT_TRACK:
-      return "Next";
-    case TURN_ON:
-      return "Turn On";
-    case TURN_OFF:
-      return "Turn Off";
-    case PLAY_MEDIA:
-      return "Play Media";
-    case VOLUME_STEP:
-      return "Volume Step";
-    case SELECT_SOURCE:
-      return "Select Source";
-    case STOP:
-      return "Stop";
-    case CLEAR_PLAYLIST:
-      return "Clear Playlist";
-    case PLAY:
-      return "Play";
-    case SHUFFLE_SET:
-      return "Shuffle";
-    case SELECT_SOUND_MODE:
-      return "Select Sound Mode";
-    case BROWSE_MEDIA:
-      return "Browse Media";
-    case REPEAT_SET:
-      return "Repeat";
-    case GROUPING:
-      return "Grouping";
-    case TV_BACK:
-      return "Back";
-    case TV_HOME:
-      return "TV Home";
-    case MENU_HOME:
-      return "Menu";
-    case REMOTE_MODE:
-      return "Remote";
-  }
-  return "";
-}
-
-static std::map<MediaPlayerSupportedFeature, std::string>
-    supported_feature_string_map = {{PAUSE, "PAUSE"},
-                                    {SEEK, "SEEK"},
-                                    {VOLUME_SET, "VOLUME_SET"},
-                                    {VOLUME_MUTE, "VOLUME_MUTE"},
-                                    {PREVIOUS_TRACK, "PREVIOUS_TRACK"},
-                                    {NEXT_TRACK, "NEXT_TRACK"},
-                                    {TURN_ON, "TURN_ON"},
-                                    {TURN_OFF, "TURN_OFF"},
-                                    {PLAY_MEDIA, "PLAY_MEDIA"},
-                                    {VOLUME_STEP, "VOLUME_STEP"},
-                                    {SELECT_SOURCE, "SELECT_SOURCE"},
-                                    {STOP, "STOP"},
-                                    {CLEAR_PLAYLIST, "CLEAR_PLAYLIST"},
-                                    {PLAY, "PLAY"},
-                                    {SHUFFLE_SET, "SHUFFLE_SET"},
-                                    {SELECT_SOUND_MODE, "SELECT_SOUND_MODE"},
-                                    {BROWSE_MEDIA, "BROWSE_MEDIA"},
-                                    {REPEAT_SET, "REPEAT_SET"},
-                                    {GROUPING, "GROUPING"},
-                                    {MENU_HOME, "MENU_HOME"}};
-
-static std::map<std::string, MediaPlayerSupportedFeature>
-    supported_feature_item_map = {{"PAUSE", PAUSE},
-                                  {"SEEK", SEEK},
-                                  {"VOLUME_SET", VOLUME_SET},
-                                  {"VOLUME_MUTE", VOLUME_MUTE},
-                                  {"PREVIOUS_TRACK", PREVIOUS_TRACK},
-                                  {"NEXT_TRACK", NEXT_TRACK},
-                                  {"TURN_ON", TURN_ON},
-                                  {"TURN_OFF", TURN_OFF},
-                                  {"PLAY_MEDIA", PLAY_MEDIA},
-                                  {"VOLUME_STEP", VOLUME_STEP},
-                                  {"SELECT_SOURCE", SELECT_SOURCE},
-                                  {"STOP", STOP},
-                                  {"CLEAR_PLAYLIST", CLEAR_PLAYLIST},
-                                  {"PLAY", PLAY},
-                                  {"SHUFFLE_SET", SHUFFLE_SET},
-                                  {"SELECT_SOUND_MODE", SELECT_SOUND_MODE},
-                                  {"BROWSE_MEDIA", BROWSE_MEDIA},
-                                  {"REPEAT_SET", REPEAT_SET},
-                                  {"GROUPING", GROUPING},
-                                  {"MENU_HOME", MENU_HOME}};
 
 enum RemotePlayerType { TVRemotePlayerType, SpeakerRemotePlayerType };
 
@@ -185,6 +46,10 @@ class HomeAssistantBaseMediaPlayer
     parent_media_player_ = parent_media_player;
   }
 
+  void register_custom_command(MediaPlayerCommand* command) {
+    custom_commands_.push_back(command);
+  }
+
   void register_source(media_player_source::MediaPlayerSourceBase* new_source);
   std::vector<media_player_source::MediaPlayerSourceBase*> sources;
   int index;
@@ -205,12 +70,14 @@ class HomeAssistantBaseMediaPlayer
   std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> get_features() {
     return supported_features_;
   }
-  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
-  get_option_menu_features() {
-    std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> out;
+  const std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>* 
+  get_option_menu_features(bool bottomMenu) {
+    if (actionable_features_.size() > 0) {
+      return &actionable_features_;
+    }
     std::copy_if(supported_features_.begin(), supported_features_.end(),
-                 std::back_inserter(out),
-                 [](std::shared_ptr<MediaPlayerSupportedFeature> i) {
+                 std::back_inserter(actionable_features_),
+                 [bottomMenu](std::shared_ptr<MediaPlayerSupportedFeature> i) {
                    switch (*(i.get())) {
                      case SHUFFLE_SET:
                      case GROUPING:
@@ -220,14 +87,16 @@ class HomeAssistantBaseMediaPlayer
                      case TV_BACK:
                      case TV_HOME:
                      case MENU_HOME:
-                     case PAUSE:
-                       //  case REMOTE_MODE:
                        return true;
+                     case PAUSE:
+                     case VOLUME_SET:
+                       return bottomMenu;
                      default:
                        return false;
                    }
                  });
-    return out;
+    actionable_features_.push_back(std::make_shared<MediaPlayerSupportedFeature>(CUSTOM_COMMAND));
+    return &actionable_features_;
   }
 
   bool supports(MediaPlayerSupportedFeature feature);
@@ -264,6 +133,10 @@ class HomeAssistantBaseMediaPlayer
   float volume_step_ = 0.04;
   std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
       supported_features_ = {};
+  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
+      actionable_features_ = {};
+  std::vector<MediaPlayerCommand*>
+      custom_commands_ = {};
 
   virtual void group_members_changed(std::string state);
   virtual void subscribe_media_artist();

@@ -169,7 +169,7 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
     std::string state) {
   ESP_LOGI(TAG, "player_supported_features_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
-
+  actionable_features_.clear();
   if (playerState == NoRemotePlayerState) {
     ESP_LOGW(TAG,
              "player_supported_features_changed: %s updated without state. "
