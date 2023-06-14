@@ -83,7 +83,8 @@ class HomeAssistantBaseMediaPlayer
       return &actionable_features_;
     }
     for (auto& feature : supported_features_) {
-      ESP_LOGI("media_player", "feature: %s", supported_feature_string(feature).c_str());
+      ESP_LOGI("media_player", "feature: %s",
+               supported_feature_string(feature).c_str());
       switch (feature) {
         case SHUFFLE_SET:
         case GROUPING:
@@ -95,20 +96,30 @@ class HomeAssistantBaseMediaPlayer
           break;
         case CUSTOM_COMMAND:
           continue;
-        case MENU_HOME:
-          if (get_player_type() == TVRemotePlayerType)
-            break;
-          continue;
         case PAUSE:
-        case VOLUME_SET:
           if (!bottomMenu)
             continue;
           break;
+        case VOLUME_SET:
+          if (bottomMenu) {
+            auto volume_up = new MediaPlayerFeatureCommand(VOLUME_UP);
+            volume_up->set_title(supported_feature_string(VOLUME_UP));
+            auto volume_down = new MediaPlayerFeatureCommand(VOLUME_DOWN);
+            volume_down->set_title(supported_feature_string(VOLUME_DOWN));
+            actionable_features_.push_back(volume_up);
+            actionable_features_.push_back(volume_down);
+            continue;
+          }
         default:
           continue;
       }
       auto new_command = new MediaPlayerFeatureCommand(feature);
       new_command->set_title(supported_feature_string(feature));
+      actionable_features_.push_back(new_command);
+    }
+    if (get_player_type() == TVRemotePlayerType || bottomMenu) {
+      auto new_command = new MediaPlayerFeatureCommand(MENU_HOME);
+      new_command->set_title(supported_feature_string(MENU_HOME));
       actionable_features_.push_back(new_command);
     }
     for (auto& command : custom_commands_) {
