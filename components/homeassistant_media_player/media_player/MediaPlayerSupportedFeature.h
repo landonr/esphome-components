@@ -1,4 +1,5 @@
 #pragma once
+
 #include "MediaPlayerCommand.h"
 
 namespace esphome {
@@ -146,13 +147,24 @@ static std::map<std::string, MediaPlayerSupportedFeature>
 
 class MediaPlayerFeatureCommand {
  public:
-  MediaPlayerFeatureCommand(MediaPlayerSupportedFeature feature,
-                            const MediaPlayerCommand* command)
-      : feature_(feature), command_(command) {}
+  MediaPlayerFeatureCommand(MediaPlayerSupportedFeature feature)
+      : feature_(feature) {}
+  void set_command(MediaPlayerCommand* command) { command_ = command; }
+  MediaPlayerSupportedFeature get_feature() { return feature_; }
+  MediaPlayerCommand* get_command() { return command_; }
+  std::string get_title() {
+    if (command_ != nullptr) {
+      return command_->get_name();
+    }
+    return title_;
+  }
+  void set_title(std::string title) { title_ = title; }
 
-private:
+ private:
   MediaPlayerSupportedFeature feature_;
-  const MediaPlayerCommand* command_;
+  MediaPlayerCommand* command_ = nullptr;
+  std::string title_;
 };
+
 }  // namespace homeassistant_media_player
 }  // namespace esphome

@@ -5,12 +5,13 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "MediaPlayerCommand.h"
 #include "MediaPlayerSource.h"
+#include "MediaPlayerSupportedFeature.h"
 #include "esphome/components/homeassistant_component/HomeAssistantComponent.h"
 #include "esphome/components/media_player/media_player.h"
 #include "esphome/components/media_player_source/MediaPlayerSourceBase.h"
 #include "esphome/core/log.h"
-#include "MediaPlayerSupportedFeature.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
@@ -47,11 +48,17 @@ class HomeAssistantBaseMediaPlayer
   }
 
   void register_custom_command(MediaPlayerCommand* command) {
-    custom_commands_.push_back(command);
+    auto new_command = new MediaPlayerFeatureCommand(
+        MediaPlayerSupportedFeature::CUSTOM_COMMAND);
+    new_command->set_command(command);
+    custom_commands_.push_back(new_command);
+  }
+
+  std::vector<media_player_source::MediaPlayerSourceBase*>* get_sources() {
+    return &sources_;
   }
 
   void register_source(media_player_source::MediaPlayerSourceBase* new_source);
-  std::vector<media_player_source::MediaPlayerSourceBase*> sources;
   int index;
   virtual RemotePlayerType get_player_type() { return player_type_; }
   void setup() override;
@@ -67,35 +74,47 @@ class HomeAssistantBaseMediaPlayer
   void toggle_shuffle();
   void toggle_mute();
   void toggle_repeat();
-  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>> get_features() {
-    return supported_features_;
+  const std::vector<MediaPlayerSupportedFeature>* get_features() {
+    return &supported_features_;
   }
-  const std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>* 
-  get_option_menu_features(bool bottomMenu) {
+  const std::vector<MediaPlayerFeatureCommand*>* get_option_menu_features(
+      bool bottomMenu) {
     if (actionable_features_.size() > 0) {
       return &actionable_features_;
     }
-    std::copy_if(supported_features_.begin(), supported_features_.end(),
-                 std::back_inserter(actionable_features_),
-                 [bottomMenu](std::shared_ptr<MediaPlayerSupportedFeature> i) {
-                   switch (*(i.get())) {
-                     case SHUFFLE_SET:
-                     case GROUPING:
-                     case REPEAT_SET:
-                     case TURN_ON:
-                     case TURN_OFF:
-                     case TV_BACK:
-                     case TV_HOME:
-                     case MENU_HOME:
-                       return true;
-                     case PAUSE:
-                     case VOLUME_SET:
-                       return bottomMenu;
-                     default:
-                       return false;
-                   }
-                 });
-    actionable_features_.push_back(std::make_shared<MediaPlayerSupportedFeature>(CUSTOM_COMMAND));
+    for (auto& feature : supported_features_) {
+      ESP_LOGI("media_player", "feature: %s", supported_feature_string(feature).c_str());
+      switch (feature) {
+        case SHUFFLE_SET:
+        case GROUPING:
+        case REPEAT_SET:
+        case TURN_ON:
+        case TURN_OFF:
+        case TV_BACK:
+        case TV_HOME:
+          break;
+        case CUSTOM_COMMAND:
+          continue;
+        case MENU_HOME:
+          if (get_player_type() == TVRemotePlayerType)
+            break;
+          continue;
+        case PAUSE:
+        case VOLUME_SET:
+          if (!bottomMenu)
+            continue;
+          break;
+        default:
+          continue;
+      }
+      auto new_command = new MediaPlayerFeatureCommand(feature);
+      new_command->set_title(supported_feature_string(feature));
+      actionable_features_.push_back(new_command);
+    }
+    for (auto& command : custom_commands_) {
+      ESP_LOGI("media_player", "command: %s", command->get_title().c_str());
+      actionable_features_.push_back(command);
+    }
     return &actionable_features_;
   }
 
@@ -131,12 +150,10 @@ class HomeAssistantBaseMediaPlayer
   bool shuffle_ = false;
   MediaPlayerRepeatMode repeat_mode_ = NOT_SET;
   float volume_step_ = 0.04;
-  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
-      supported_features_ = {};
-  std::vector<std::shared_ptr<MediaPlayerSupportedFeature>>
-      actionable_features_ = {};
-  std::vector<MediaPlayerCommand*>
-      custom_commands_ = {};
+  std::vector<MediaPlayerSupportedFeature> supported_features_ = {};
+  std::vector<MediaPlayerFeatureCommand*> actionable_features_ = {};
+  std::vector<MediaPlayerFeatureCommand*> custom_commands_ = {};
+  std::vector<media_player_source::MediaPlayerSourceBase*> sources_;
 
   virtual void group_members_changed(std::string state);
   virtual void subscribe_media_artist();

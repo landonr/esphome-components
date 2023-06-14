@@ -1,7 +1,7 @@
 #pragma once
 
 #include "esphome/core/automation.h"
-#include "esphome/core/component.h"
+#include "esphome/core/entity_base.h"
 
 namespace esphome {
 namespace homeassistant_media_player {

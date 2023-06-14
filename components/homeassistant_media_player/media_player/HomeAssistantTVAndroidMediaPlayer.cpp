@@ -8,14 +8,10 @@ namespace homeassistant_media_player {
 static const char* const TAG = "homeassistant.media_player_android";
 
 void HomeAssistantTVAndroidMediaPlayer::setup() {
-  supported_features_.push_back(
-      std::make_shared<MediaPlayerSupportedFeature>(TV_BACK));
-  supported_features_.push_back(
-      std::make_shared<MediaPlayerSupportedFeature>(TV_HOME));
-  supported_features_.push_back(
-      std::make_shared<MediaPlayerSupportedFeature>(MENU_HOME));
-  supported_features_.push_back(
-      std::make_shared<MediaPlayerSupportedFeature>(REMOTE_MODE));
+  supported_features_.push_back(TV_BACK);
+  supported_features_.push_back(TV_HOME);
+  supported_features_.push_back(MENU_HOME);
+  supported_features_.push_back(REMOTE_MODE);
   HomeAssistantTVMediaPlayer::setup();
 }
 

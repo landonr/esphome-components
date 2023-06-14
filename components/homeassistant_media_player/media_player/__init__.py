@@ -122,9 +122,17 @@ async def to_code(config):
             cg.add(soundbar.set_tv(var))
             cg.add(var.set_soundbar(soundbar))
 
-    
-
     if CONF_SOURCES in config:
         for conf in config.get(CONF_SOURCES, []):
             new_source = await cg.get_variable(conf[CONF_ID])
             cg.add(var.register_source(new_source))
+
+    if CONF_COMMANDS in config:
+        for conf in config.get(CONF_COMMANDS, []):
+            service = cg.new_Pvariable(conf[CONF_ID])
+            cg.add(service.set_name(conf[CONF_NAME]))
+            
+            for command in conf.get(CONF_COMMAND, []):
+                trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
+                await automation.build_automation(trigger, [], command)
+            cg.add(var.register_custom_command(service))

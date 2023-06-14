@@ -492,7 +492,7 @@ void HomeAssistantMediaPlayerGroup::call_feature(
 
 std::vector<media_player_source::MediaPlayerSourceBase*>*
 HomeAssistantMediaPlayerGroup::activePlayerSources() {
-  return &active_player_->sources;
+  return active_player_->get_sources();
 }
 
 // private
