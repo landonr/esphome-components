@@ -1,12 +1,14 @@
 import esphome.codegen as cg
+from esphome import automation
 import esphome.config_validation as cv
 from esphome.components import media_player, homeassistant_component, media_player_source
-from esphome.const import CONF_ENTITY_ID, CONF_NAME, CONF_ID, CONF_INTERNAL, CONF_DISABLED_BY_DEFAULT
+from esphome.const import CONF_ENTITY_ID, CONF_NAME, CONF_ID, CONF_INTERNAL, CONF_DISABLED_BY_DEFAULT, CONF_TRIGGER_ID
 
 homeassistant_media_player_ns = cg.esphome_ns.namespace("homeassistant_media_player")
 
 AUTO_LOAD = ['media_player', 'homeassistant_component', 'media_player_source', 'json']
 
+MediaPlayerCommand = homeassistant_media_player_ns.class_("MediaPlayerCommand")
 HomeAssistantBaseMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantBaseMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantSpeakerMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantSpeakerMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantTVMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVMediaPlayer", media_player.MediaPlayer, cg.Component)
@@ -23,6 +25,27 @@ CONF_SAMSUNG = "samsung"
 CONF_ANDROID_TV = "android_tv"
 CONF_SOUNDBAR = "soundbar"
 CONF_SOURCES = "sources"
+CONF_COMMAND = "command"
+CONF_COMMANDS = "commands"
+
+
+ServiceCalledTrigger = homeassistant_media_player_ns.class_(
+    "ServiceCalledTrigger", automation.Trigger.template()
+)
+
+MEDIA_PLAYER_COMMAND_SCHEMA = cv.Schema(
+    {
+        cv.GenerateID(CONF_ID): cv.declare_id(MediaPlayerCommand),
+        cv.Required(CONF_COMMAND): automation.validate_automation(
+            {
+                cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
+                    ServiceCalledTrigger
+                ),
+            }
+        ),
+        cv.Required(CONF_NAME): cv.string,
+    }
+)
 
 MEDIA_PLAYER_COMMON_SCHEMA = cv.Schema(
     {
@@ -32,6 +55,9 @@ MEDIA_PLAYER_COMMON_SCHEMA = cv.Schema(
         cv.Optional(CONF_DISABLED_BY_DEFAULT, default=True): cv.boolean,
         cv.Optional(CONF_SOURCES): cv.All(
             cv.ensure_list(media_player_source.SOURCE_REFERENCE_SCHEMA), cv.Length(min=1)
+        ),
+        cv.Optional(CONF_COMMANDS): cv.All(
+            cv.ensure_list(MEDIA_PLAYER_COMMAND_SCHEMA), cv.Length(min=1)
         ),
     }
 ).extend(homeassistant_component.COMPONENT_CONFIG_SCHEMA)
@@ -96,9 +122,17 @@ async def to_code(config):
             cg.add(soundbar.set_tv(var))
             cg.add(var.set_soundbar(soundbar))
 
-    
-
     if CONF_SOURCES in config:
         for conf in config.get(CONF_SOURCES, []):
             new_source = await cg.get_variable(conf[CONF_ID])
             cg.add(var.register_source(new_source))
+
+    if CONF_COMMANDS in config:
+        for conf in config.get(CONF_COMMANDS, []):
+            service = cg.new_Pvariable(conf[CONF_ID])
+            cg.add(service.set_name(conf[CONF_NAME]))
+            
+            for command in conf.get(CONF_COMMAND, []):
+                trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
+                await automation.build_automation(trigger, [], command)
+            cg.add(var.register_custom_command(service))

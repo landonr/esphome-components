@@ -17,11 +17,7 @@ void HomeAssistantBaseMediaPlayer::setup() {
 
 void HomeAssistantBaseMediaPlayer::register_source(
     media_player_source::MediaPlayerSourceBase* new_source) {
-  sources.push_back(new_source);
-
-  // new_media_player->add_on_state_callback([this, new_media_player]() {
-  //   this->state_updated(new_media_player->playerState);
-  // });
+  sources_.push_back(new_source);
 }
 
 void HomeAssistantBaseMediaPlayer::playSource(
@@ -169,7 +165,7 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
     std::string state) {
   ESP_LOGI(TAG, "player_supported_features_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
-
+  actionable_features_.clear();
   if (playerState == NoRemotePlayerState) {
     ESP_LOGW(TAG,
              "player_supported_features_changed: %s updated without state. "
@@ -178,13 +174,14 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
     this->state = media_player::MEDIA_PLAYER_STATE_NONE;
     playerState = UnavailableRemotePlayerState;
   }
-  for (auto const& x : supported_feature_string_map) {
-    if (state.find(x.second) != std::string::npos) {
-      auto new_feature = std::make_shared<MediaPlayerSupportedFeature>(x.first);
+  int state_bitmask = atoi(state.c_str());
+  for (auto const& x : supported_feature_bitmask_map) {
+    if (state_bitmask & x) {
+      auto new_feature = x;
       supported_features_.push_back(new_feature);
-      ESP_LOGI(TAG, "%s, supported feature: %s", this->entity_id_.c_str(),
-               x.second.c_str());
-      switch (x.first) {
+      ESP_LOGD(TAG, "%s, supported feature: %d of %d", this->entity_id_.c_str(),
+               x, state_bitmask);
+      switch (x) {
         case PAUSE:
           // subscribe_player_state();
           break;
@@ -229,6 +226,12 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
           break;
       }
     }
+  }
+  if (supported_features_.size() == 0) {
+    ESP_LOGW(TAG,
+             "player_supported_features_changed: %s updated without supported "
+             "features",
+             this->entity_id_.c_str());
   }
 }
 
@@ -458,9 +461,8 @@ void HomeAssistantBaseMediaPlayer::group_members_changed(std::string state) {
 
 bool HomeAssistantBaseMediaPlayer::supports(
     MediaPlayerSupportedFeature feature) {
-  for (auto iter = supported_features_.begin();
-       iter != supported_features_.end(); ++iter) {
-    if (feature == *(iter->get())) {
+  for (auto supported_feature : supported_features_) {
+    if (supported_feature == feature) {
       return true;
     }
   }

@@ -21,17 +21,17 @@ void SpotifySourceComponent::stripUnicode(std::string* str) {
 void SpotifySourceComponent::playlists_changed(std::string state) {
   stripUnicode(&state);
   ESP_LOGI(TAG, "Spotify playlists changes to %s", state.c_str());
+  this->sources_.clear();
   parse_json_array(state, [this](JsonArray object) {
-    this->sources_.clear();
     for (JsonVariant v : object) {
       std::string key = v["uri"].as<std::string>();
       std::string value = v["name"].as<std::string>();
       ESP_LOGD(TAG, "new JSON key value %s %s", key.c_str(), value.c_str());
-      auto newsource =
-          std::make_shared<media_player_source::MediaPlayerSourceItem>(
-              value, key, media_player_source::MediaPlayerSourceTypePlaylist);
+      auto newsource = new media_player_source::MediaPlayerSourceItem(
+          value, key, media_player_source::MediaPlayerSourceTypePlaylist);
       this->sources_.push_back(newsource);
     }
+    array.clear;
   });
 }
 }  // namespace media_player_source_spotify

@@ -4,6 +4,7 @@ from esphome.const import CONF_ID, CONF_NAME
 from esphome.components import media_player_source
 
 AUTO_LOAD = ["media_player_source"]
+CONF_LIMIT = "limit"
 
 media_player_source_sonos_ns = cg.esphome_ns.namespace("media_player_source_sonos")
 
@@ -13,9 +14,12 @@ CONFIG_SCHEMA = media_player_source.BASE_SCHEMA.extend(
     {
         cv.GenerateID(CONF_ID): cv.declare_id(SonosSourceComponent),
         cv.Optional(CONF_NAME, default="Sonos"): cv.string,
+        cv.Optional(CONF_LIMIT): cv.positive_int,
     }
 )
 
 async def to_code(config):
     var = media_player_source.new_source_base(config)
     await cg.register_component(var, config)
+    if CONF_LIMIT in config:
+        cg.add(var.set_limit(config[CONF_LIMIT]))
