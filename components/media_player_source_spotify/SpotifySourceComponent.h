@@ -12,6 +12,7 @@ class SpotifySourceComponent
     : public media_player_source::MediaPlayerSourceAPI {
  public:
   void setup() override;
+  float get_setup_priority() const override { return setup_priority::LATE; }
 
  private:
   void playlists_changed(std::string state);

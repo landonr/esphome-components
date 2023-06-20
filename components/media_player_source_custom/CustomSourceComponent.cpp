@@ -15,9 +15,8 @@ void CustomSourceComponent::add_source(
     media_player_source::MediaPlayerSourceType media_type,
     media_player_source::AppPlayerSourceType app_type) {
   ESP_LOGI(TAG, "add_source %s", name.c_str());
-  auto new_source =
-      std::make_shared<media_player_source::MediaPlayerSourceItem>(
-          name, media_id, media_type);
+  auto new_source = new media_player_source::MediaPlayerSourceItem(
+      name, media_id, media_type);
   new_source->set_app_type(app_type);
   sources_.push_back(new_source);
 }

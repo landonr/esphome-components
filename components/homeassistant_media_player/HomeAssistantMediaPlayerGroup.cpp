@@ -140,14 +140,6 @@ void HomeAssistantMediaPlayerGroup::setActivePlayer(
   active_player_ = newActivePlayer;
 }
 
-std::vector<std::string> HomeAssistantMediaPlayerGroup::groupNames() {
-  std::vector<std::string> output;
-  for (auto& speaker : media_players_) {
-    output.push_back(speaker->get_name());
-  }
-  return output;
-}
-
 void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
   if (active_player_->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
@@ -319,11 +311,12 @@ void HomeAssistantMediaPlayerGroup::selectGroup(
     speakerList.push_back(speaker);
   }
   auto speaker = speakerList[menuIndex - 1];
+  auto groupMembers = speaker->get_group_members();
 
-  if (speaker->groupMembers.size() > 1) {
-    if (std::find(speaker->groupMembers.begin(), speaker->groupMembers.end(),
+  if (groupMembers->size() > 1) {
+    if (std::find(groupMembers->begin(), groupMembers->end(),
                   newSpeakerGroupParent->get_entity_id()) !=
-        speaker->groupMembers.end()) {
+        groupMembers->end()) {
       speaker->ungroup();
     }
   } else {
@@ -510,14 +503,13 @@ void HomeAssistantMediaPlayerGroup::state_updated(
     HomeAssistantBaseMediaPlayer* player) {
   ESP_LOGD(TAG, "state update callback %d %d", active_player_ == NULL,
            sync_active_player);
-
-  bool playerGrouped = player->groupMembers.size() > 1;
+  bool playerGrouped = player->get_group_members()->size() > 1;
   bool parentSet = player->get_parent_media_player() != NULL;
   bool setParent = !parentSet && playerGrouped;
   bool unsetParent = parentSet && !playerGrouped;
-  bool entityIsParent = parentSet && player->groupMembers.size() > 0 &&
+  bool entityIsParent = parentSet && player->get_group_members()->size() > 0 &&
                         player->get_parent_media_player()->get_entity_id() ==
-                            player->groupMembers[0];
+                            (*player->get_group_members())[0];
   bool playerParentNotSynced = (setParent || unsetParent) && !entityIsParent;
   ESP_LOGD(TAG,
            "trying group parent: set parent %d, unset parent %d, entity is "
@@ -525,18 +517,20 @@ void HomeAssistantMediaPlayerGroup::state_updated(
            setParent, unsetParent, entityIsParent);
   if (playerParentNotSynced) {
     ESP_LOGD(TAG, "setting group parent: %s, %d",
-             player->get_entity_id().c_str(), player->groupMembers.size());
+             player->get_entity_id().c_str(),
+             player->get_group_members()->size());
     for (auto& media_player : media_players_) {
       if (media_player->get_entity_id() == player->get_entity_id()) {
         continue;
-      } else if (player->groupMembers.size() > 0 &&
-                 media_player->get_entity_id() == player->groupMembers[0]) {
+      } else if (player->get_group_members()->size() > 0 &&
+                 media_player->get_entity_id() ==
+                     (*player->get_group_members())[0]) {
         player->set_parent_media_player(media_player);
         ESP_LOGD(TAG, "set group parent: %s, %s",
                  player->get_entity_id().c_str(),
                  media_player->get_entity_id().c_str());
         break;
-      } else if (player->groupMembers.size() <= 1) {
+      } else if (player->get_group_members()->size() <= 1) {
         player->set_parent_media_player(NULL);
         ESP_LOGD(TAG, "unset group parent: %s, %s",
                  player->get_entity_id().c_str(),
@@ -545,6 +539,9 @@ void HomeAssistantMediaPlayerGroup::state_updated(
     }
   }
   if (active_player_ != NULL) {
+    if (active_player_ == player) {
+      publish_state(0);
+    }
     return;
   } else if (!sync_active_player) {
     publish_state(0);

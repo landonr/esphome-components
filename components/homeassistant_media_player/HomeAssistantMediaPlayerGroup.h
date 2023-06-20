@@ -38,7 +38,6 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
                                       public sensor::Sensor {
  public:
   HomeAssistantBaseMediaPlayer* active_player_ = NULL;
-  std::vector<HomeAssistantBaseMediaPlayer*> media_players_;
   bool playerSearchFinished = false;
   std::string playingNewSourceText = "";
   int loadedPlayers = 0;
@@ -51,10 +50,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   void findActivePlayer(bool background = false);
   bool selectMediaPlayers(HomeAssistantBaseMediaPlayer* selected_media_player);
   void setActivePlayer(HomeAssistantBaseMediaPlayer* newActivePlayer);
-  // void setup(std::vector<TVSetup> newTVSetups,
-  //            std::vector<SpeakerSetup> newSpeakerSetups);
   void register_media_player(HomeAssistantBaseMediaPlayer* new_media_player);
-  std::vector<std::string> groupNames();
   void increaseSpeakerVolume();
   void decreaseSpeakerVolume();
   bool mediaShuffling();
@@ -88,8 +84,12 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
     active_player_source_index_ = active_player_source_index;
   }
   int get_active_player_source_index() { return active_player_source_index_; }
+  const std::vector<HomeAssistantBaseMediaPlayer*>* get_media_players() {
+    return &media_players_;
+  }
 
  private:
+  std::vector<HomeAssistantBaseMediaPlayer*> media_players_;
   void state_updated(HomeAssistantBaseMediaPlayer* player);
   bool sync_active_player = false;
   int active_player_source_index_ = -1;

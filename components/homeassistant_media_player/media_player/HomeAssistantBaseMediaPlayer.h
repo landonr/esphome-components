@@ -82,15 +82,15 @@ class HomeAssistantBaseMediaPlayer
     if (actionable_features_.size() > 0) {
       return &actionable_features_;
     }
+    bool power_set = false;
     for (auto& feature : supported_features_) {
-      ESP_LOGI("media_player", "feature: %s",
+      ESP_LOGI("media_player", "get_option_menu_features: %s feature: %s",
+               this->entity_id_.c_str(),
                supported_feature_string(feature).c_str());
       switch (feature) {
         case SHUFFLE_SET:
         case GROUPING:
         case REPEAT_SET:
-        case TURN_ON:
-        case TURN_OFF:
         case TV_BACK:
         case TV_HOME:
           break;
@@ -110,6 +110,17 @@ class HomeAssistantBaseMediaPlayer
             actionable_features_.push_back(volume_down);
             continue;
           }
+          continue;
+        case TURN_ON:
+        case TURN_OFF: {
+          if (!power_set) {
+            power_set = true;
+            auto new_command = new MediaPlayerFeatureCommand(POWER_SET);
+            new_command->set_title(supported_feature_string(POWER_SET));
+            actionable_features_.push_back(new_command);
+          }
+          continue;
+        }
         default:
           continue;
       }
@@ -126,6 +137,8 @@ class HomeAssistantBaseMediaPlayer
       ESP_LOGI("media_player", "command: %s", command->get_title().c_str());
       actionable_features_.push_back(command);
     }
+    supported_features_.clear();
+    custom_commands_.clear();
     return &actionable_features_;
   }
 
@@ -140,7 +153,6 @@ class HomeAssistantBaseMediaPlayer
   int mediaDuration = -1;
   int mediaPosition = -1;
   std::string playlist_title = "";
-  std::vector<std::string> groupMembers;
 
   virtual void subscribe_source() {
     ESP_LOGI("homeassistant.media_player_base", "subscribe_source: %s",
@@ -155,6 +167,7 @@ class HomeAssistantBaseMediaPlayer
              this->entity_id_.c_str());
   }
   void media_title_changed(std::string state);
+  std::vector<std::string>* get_group_members() { return &groupMembers; }
 
  protected:
   bool muted_ = false;
@@ -165,6 +178,7 @@ class HomeAssistantBaseMediaPlayer
   std::vector<MediaPlayerFeatureCommand*> actionable_features_ = {};
   std::vector<MediaPlayerFeatureCommand*> custom_commands_ = {};
   std::vector<media_player_source::MediaPlayerSourceBase*> sources_;
+  std::vector<std::string> groupMembers;
 
   virtual void group_members_changed(std::string state);
   virtual void subscribe_media_artist();

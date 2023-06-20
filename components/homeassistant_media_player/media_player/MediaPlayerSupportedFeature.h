@@ -34,6 +34,7 @@ enum MediaPlayerSupportedFeature {
   VOLUME_DOWN = 13,
   VOLUME_UP = 14,
   CUSTOM_COMMAND = 15,
+  POWER_SET = 18,
 };
 
 static std::string supported_feature_string(
@@ -91,9 +92,21 @@ static std::string supported_feature_string(
       return "Vol Up";
     case CUSTOM_COMMAND:
       return "CSTM CMD";
+    case POWER_SET:
+      return "POWER_SET";
   }
   return "";
 }
+
+static std::vector<MediaPlayerSupportedFeature> supported_feature_bitmask_map =
+    {PAUSE,          SEEK,        VOLUME_SET,
+     VOLUME_MUTE,    VOLUME_DOWN, VOLUME_UP,
+     PREVIOUS_TRACK, NEXT_TRACK,  TURN_ON,
+     TURN_OFF,       PLAY_MEDIA,  VOLUME_STEP,
+     SELECT_SOURCE,  STOP,        CLEAR_PLAYLIST,
+     PLAY,           SHUFFLE_SET, SELECT_SOUND_MODE,
+     BROWSE_MEDIA,   REPEAT_SET,  GROUPING,
+     MENU_HOME};
 
 static std::map<MediaPlayerSupportedFeature, std::string>
     supported_feature_string_map = {{PAUSE, "PAUSE"},
@@ -118,7 +131,8 @@ static std::map<MediaPlayerSupportedFeature, std::string>
                                     {REPEAT_SET, "REPEAT_SET"},
                                     {GROUPING, "GROUPING"},
                                     {MENU_HOME, "MENU_HOME"},
-                                    {CUSTOM_COMMAND, "CUSTOM_COMMAND"}};
+                                    {CUSTOM_COMMAND, "CUSTOM_COMMAND"},
+                                    {POWER_SET, "POWER_SET"}};
 
 static std::map<std::string, MediaPlayerSupportedFeature>
     supported_feature_item_map = {{"PAUSE", PAUSE},
@@ -143,7 +157,8 @@ static std::map<std::string, MediaPlayerSupportedFeature>
                                   {"REPEAT_SET", REPEAT_SET},
                                   {"GROUPING", GROUPING},
                                   {"MENU_HOME", MENU_HOME},
-                                  {"CUSTOM_COMMAND", CUSTOM_COMMAND}};
+                                  {"CUSTOM_COMMAND", CUSTOM_COMMAND},
+                                  {"POWER_SET", POWER_SET}};
 
 class MediaPlayerFeatureCommand {
  public:

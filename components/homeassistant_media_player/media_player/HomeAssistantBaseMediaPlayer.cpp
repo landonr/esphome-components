@@ -18,10 +18,6 @@ void HomeAssistantBaseMediaPlayer::setup() {
 void HomeAssistantBaseMediaPlayer::register_source(
     media_player_source::MediaPlayerSourceBase* new_source) {
   sources_.push_back(new_source);
-
-  // new_media_player->add_on_state_callback([this, new_media_player]() {
-  //   this->state_updated(new_media_player->playerState);
-  // });
 }
 
 void HomeAssistantBaseMediaPlayer::playSource(
@@ -179,13 +175,13 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
     playerState = UnavailableRemotePlayerState;
   }
   int state_bitmask = atoi(state.c_str());
-  for (auto const& x : supported_feature_string_map) {
-    if (state_bitmask & x.first) {
-      auto new_feature = x.first;
+  for (auto const& x : supported_feature_bitmask_map) {
+    if (state_bitmask & x) {
+      auto new_feature = x;
       supported_features_.push_back(new_feature);
-      ESP_LOGD(TAG, "%s, supported feature: %s", this->entity_id_.c_str(),
-               x.second.c_str());
-      switch (x.first) {
+      ESP_LOGD(TAG, "%s, supported feature: %d of %d", this->entity_id_.c_str(),
+               x, state_bitmask);
+      switch (x) {
         case PAUSE:
           // subscribe_player_state();
           break;

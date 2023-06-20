@@ -107,12 +107,10 @@ class MediaPlayerSourceBase : public EntityBase {
  public:
   // void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
   // std::string get_entity_id() { return entity_id_; }
-  std::vector<std::shared_ptr<MediaPlayerSourceItem>>* get_sources() {
-    return &sources_;
-  }
+  std::vector<MediaPlayerSourceItem*>* get_sources() { return &sources_; }
 
  protected:
-  std::vector<std::shared_ptr<MediaPlayerSourceItem>> sources_ = {};
+  std::vector<MediaPlayerSourceItem*> sources_ = {};
   using json_parse_array_t = std::function<void(JsonArray)>;
   void parse_json_array(const std::string& data, const json_parse_array_t& f);
 };
@@ -131,21 +129,22 @@ class MediaPlayerSourceAPI : public MediaPlayerSourceBase,
 
 class MediaPlayerSourceInternal : public MediaPlayerSourceBase {
  public:
-  void set_sources(
-      const std::vector<std::shared_ptr<MediaPlayerSourceItem>>& sources) {
+  void set_sources(const std::vector<MediaPlayerSourceItem*>& sources) {
     sources_ = sources;
   }
 
   void set_sources_json_array(const std::string state) {
+    for (auto source : this->sources_) {
+      delete source;
+    }
+    this->sources_.clear();
     parse_json_array(state, [this](JsonArray object) {
-      this->sources_.clear();
       for (JsonVariant v : object) {
         std::string sourceName = v.as<std::string>();
-        auto newsource =
-            std::make_shared<media_player_source::MediaPlayerSourceItem>(
-                sourceName, sourceName,
-                media_player_source::MediaPlayerSourceType::
-                    MediaPlayerSourceTypeSource);
+        auto newsource = new media_player_source::MediaPlayerSourceItem(
+            sourceName, sourceName,
+            media_player_source::MediaPlayerSourceType::
+                MediaPlayerSourceTypeSource);
         this->sources_.push_back(newsource);
       }
     });
