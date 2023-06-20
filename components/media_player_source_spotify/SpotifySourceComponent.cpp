@@ -31,7 +31,6 @@ void SpotifySourceComponent::playlists_changed(std::string state) {
           value, key, media_player_source::MediaPlayerSourceTypePlaylist);
       this->sources_.push_back(newsource);
     }
-    array.clear;
   });
 }
 }  // namespace media_player_source_spotify
