@@ -585,7 +585,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(
 void HomeAssistantMediaPlayerGroup::playSource(
     media_player_source::MediaPlayerSourceItem* source) {
   active_player_->clearSource();
-  playingNewSourceText = source->get_name();
+  new_source = source;
   if (active_player_->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
     HomeAssistantSpeakerMediaPlayer* activeSpeaker =
