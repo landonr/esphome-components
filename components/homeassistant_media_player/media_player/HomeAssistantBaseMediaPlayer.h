@@ -97,6 +97,7 @@ class HomeAssistantBaseMediaPlayer
         case CUSTOM_COMMAND:
           continue;
         case PAUSE:
+        case NEXT_TRACK:
           if (!bottomMenu)
             continue;
           break;
