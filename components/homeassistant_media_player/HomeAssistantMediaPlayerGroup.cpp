@@ -436,6 +436,7 @@ void HomeAssistantMediaPlayerGroup::call_feature(
   switch (feature) {
     case TURN_ON:
     case TURN_OFF:
+    case POWER_SET:
       sendActivePlayerRemoteCommand(POWER);
       break;
     case SHUFFLE_SET:
@@ -585,7 +586,9 @@ void HomeAssistantMediaPlayerGroup::state_updated(
 void HomeAssistantMediaPlayerGroup::playSource(
     media_player_source::MediaPlayerSourceItem* source) {
   active_player_->clearSource();
-  new_source = source;
+  if (new_source != nullptr) {
+    delete(new_source);
+  }
   if (active_player_->get_player_type() ==
       homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
     HomeAssistantSpeakerMediaPlayer* activeSpeaker =
