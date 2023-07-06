@@ -86,11 +86,9 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   const std::vector<HomeAssistantBaseMediaPlayer*>* get_media_players() {
     return &media_players_;
   }
-  const std::string new_source_name() {
-    if (new_source != NULL) {
-      return new_source->get_name();
-    }
-    return "";
+  std::string get_new_source_name() {
+    std::string result = new_source_name;
+    return result;
   }
 
  private:
@@ -98,9 +96,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   void state_updated(HomeAssistantBaseMediaPlayer* player);
   bool sync_active_player = false;
   int active_player_source_index_ = -1;
-  media_player_source::MediaPlayerSourceItem* new_source;
-  // bool sonos_active = false;
-  // bool spotify_active = false;
+  std::string new_source_name = "";
 };
 
 }  // namespace homeassistant_media_player
