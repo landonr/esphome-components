@@ -98,9 +98,9 @@ class HomeAssistantBaseMediaPlayer
           continue;
         case PAUSE:
         case NEXT_TRACK:
-          if (!bottomMenu)
-            continue;
-          break;
+          if (bottomMenu || get_player_type() == TVRemotePlayerType)
+            break;
+          continue;
         case VOLUME_SET:
           if (bottomMenu) {
             auto volume_up = new MediaPlayerFeatureCommand(VOLUME_UP);
