@@ -54,10 +54,18 @@ void HomeAssistantTVMediaPlayer::sources_changed(std::string state) {
 }
 
 void HomeAssistantTVMediaPlayer::increaseVolume() {
+  if(get_soundbar() != nullptr) {
+    get_soundbar()->increaseVolume();
+    return;
+  }
   tvRemoteCommand(VOLUME_UP_COMMAND);
 }
 
 void HomeAssistantTVMediaPlayer::decreaseVolume() {
+  if(get_soundbar() != nullptr) {
+    get_soundbar()->decreaseVolume();
+    return;
+  }
   tvRemoteCommand(VOLUME_DOWN_COMMAND);
 }
 
