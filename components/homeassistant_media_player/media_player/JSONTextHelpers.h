@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "esphome/components/json/json_util.h"
 #include "esphome/core/log.h"
 

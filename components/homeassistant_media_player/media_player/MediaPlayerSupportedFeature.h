@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include <string>
+#include <vector>
 #include "MediaPlayerCommand.h"
 
 namespace esphome {

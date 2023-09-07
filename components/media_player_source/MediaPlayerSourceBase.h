@@ -105,8 +105,6 @@ class MediaPlayerSourceItem {
 
 class MediaPlayerSourceBase : public EntityBase {
  public:
-  // void set_entity_id(const std::string& entity_id) { entity_id_ = entity_id; }
-  // std::string get_entity_id() { return entity_id_; }
   std::vector<MediaPlayerSourceItem*>* get_sources() { return &sources_; }
 
  protected:

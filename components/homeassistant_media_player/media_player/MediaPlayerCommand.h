@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+#include <utility>
 #include "esphome/core/automation.h"
 #include "esphome/core/entity_base.h"
 

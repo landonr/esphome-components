@@ -1,4 +1,5 @@
 #include "MediaPlayerSourceBase.h"
+#include <algorithm>
 #include "esphome/components/json/json_util.h"
 
 namespace esphome {
@@ -13,8 +14,7 @@ void MediaPlayerSourceBase::parse_json_array(const std::string& data,
   // as we can not have a true dynamic sized document.
   // The excess memory is freed below with `shrinkToFit()`
 #ifdef USE_ESP8266
-  const size_t free_heap =
-      ESP.getMaxFreeBlockSize();  // NOLINT(readability-static-accessed-through-instance)
+  const size_t free_heap = ESP.getMaxFreeBlockSize();
 #elif defined(USE_ESP32)
   const size_t free_heap = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
 #elif defined(USE_RP2040)

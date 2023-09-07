@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace esphome {
 namespace homeassistant_media_player {
