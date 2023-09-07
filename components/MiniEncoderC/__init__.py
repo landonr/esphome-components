@@ -17,12 +17,11 @@ DEPENDENCIES = ['i2c']
 
 miniencoderc_ns = cg.esphome_ns.namespace('miniencoderc')
 MiniEncoderC = miniencoderc_ns.class_('MiniEncoderC', i2c.I2CDevice, cg.Component)
-CONF_ENCODER = "encoder"
 CONF_ON_CLOCKWISE = "on_clockwise"
 CONF_ON_ANTICLOCKWISE = "on_anticlockwise"
-CONF_BUTTON = "button"
 CONF_ENCODER_FILTER = "encoder_filter"
-CONF_LIGHT = "light"
+CONF_BUTTON = "button"
+CONF_ENCODER = "encoder"
 
 MiniEncoderCClockwiseTrigger = miniencoderc_ns.class_(
     "MiniEncoderCClockwiseTrigger", automation.Trigger
@@ -37,13 +36,6 @@ ENCODER_SCHEMA = cv.Schema(
             {
                 cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
                     MiniEncoderCClockwiseTrigger
-                ),
-            }
-        ),
-        cv.Optional(CONF_ON_ANTICLOCKWISE): automation.validate_automation(
-            {
-                cv.GenerateID(CONF_TRIGGER_ID): cv.declare_id(
-                    MiniEncoderCAnticlockwiseTrigger
                 ),
             }
         ),

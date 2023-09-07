@@ -60,5 +60,5 @@ class UnitEncoderCLightOutput : public Component,
   }
 };
 
-}  // namespace miniencoderc
+}  // namespace unitencoderc
 }  // namespace esphome

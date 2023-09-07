@@ -6,6 +6,7 @@
 #include "esphome/components/light/light_traits.h"
 #include "esphome/core/color.h"
 #include "esphome/core/component.h"
+#include "esphome/core/log.h"
 
 #include <vector>
 
