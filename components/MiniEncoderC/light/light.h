@@ -1,13 +1,13 @@
 #pragma once
 
+#include <vector>
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/components/light/light_output.h"
 #include "esphome/components/light/light_state.h"
 #include "esphome/components/light/light_traits.h"
 #include "esphome/core/color.h"
 #include "esphome/core/component.h"
-
-#include <vector>
+#include "esphome/core/log.h"
 
 // based on https://github.com/m5stack/M5Unit-MiniEncoderC/blob/main/src/Unit_MiniEncoderC.cpp
 

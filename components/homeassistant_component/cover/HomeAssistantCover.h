@@ -1,3 +1,5 @@
+#include <map>
+#include <string>
 #include "esphome/components/cover/cover.h"
 #include "esphome/components/homeassistant_component/HomeAssistantComponent.h"
 

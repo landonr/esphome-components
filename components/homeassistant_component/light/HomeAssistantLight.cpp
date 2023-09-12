@@ -17,25 +17,19 @@ void HomeAssistantLight::subscribe_states() {
                                 this->entity_id_);
   subscribe_homeassistant_state(&HomeAssistantLight::min_mireds_changed,
                                 this->entity_id_, "min_mireds");
-  ;
   subscribe_homeassistant_state(&HomeAssistantLight::max_mireds_changed,
                                 this->entity_id_, "max_mireds");
-  ;
   subscribe_homeassistant_state(&HomeAssistantLight::brightness_changed,
                                 this->entity_id_, "brightness");
-  ;
   subscribe_homeassistant_state(&HomeAssistantLight::color_temp_changed,
                                 this->entity_id_, "color_temp");
-  ;
   subscribe_homeassistant_state(&HomeAssistantLight::color_changed,
                                 this->entity_id_, "hs_color");
   subscribe_homeassistant_state(&HomeAssistantLight::color_mode_changed,
                                 this->entity_id_, "color_mode");
-  ;
   subscribe_homeassistant_state(
       &HomeAssistantLight::supported_color_modes_changed, this->entity_id_,
       "supported_color_modes");
-  ;
 }
 
 void HomeAssistantLight::setup() {

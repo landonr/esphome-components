@@ -1,13 +1,15 @@
 #pragma once
 
+#include <utility>
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/i2c/i2c.h"
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/core/automation.h"
 #include "esphome/core/component.h"
-// #include "light.h"
+#include "light/light.h"
 
 // based on https://github.com/m5stack/M5Unit-MiniEncoderC/blob/main/src/Unit_MiniEncoderC.cpp
+// https://docs.m5stack.com/en/hat/MiniEncoderC%20Hat
 
 namespace esphome {
 namespace miniencoderc {
@@ -41,7 +43,7 @@ class MiniEncoderC : public i2c::I2CDevice, public Component {
     this->encoder_filter_ = encoder_filter;
   }
 
-  // void set_light(MiniEncoderCLightOutput* light) { this->light_ = light; }
+  void set_light(MiniEncoderCLightOutput* light) { this->light_ = light; }
 
  protected:
   uint8_t number_{0};
@@ -56,7 +58,7 @@ class MiniEncoderC : public i2c::I2CDevice, public Component {
   sensor::Sensor* increment_value_{nullptr};
   sensor::Sensor* firmware_version_{nullptr};
   binary_sensor::BinarySensor* button_{nullptr};
-  // MiniEncoderCLightOutput* light_{nullptr};
+  MiniEncoderCLightOutput* light_{nullptr};
   void setEncoderValue(int32_t value);
 };
 
