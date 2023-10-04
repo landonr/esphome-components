@@ -65,7 +65,7 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   std::string shuffle_string();
   std::string muteString();
   double getVolumeLevel();
-  void selectGroup(HomeAssistantBaseMediaPlayer* selected_group_parent,
+  bool selectGroup(HomeAssistantBaseMediaPlayer* selected_group_parent,
                    int menuIndex);
   bool updateMediaPosition();
   void selectNextMediaPlayer();

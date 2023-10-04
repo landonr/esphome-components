@@ -287,14 +287,14 @@ double HomeAssistantMediaPlayerGroup::getVolumeLevel() {
   return 0;
 }
 
-void HomeAssistantMediaPlayerGroup::selectGroup(
+bool HomeAssistantMediaPlayerGroup::selectGroup(
     HomeAssistantBaseMediaPlayer* selected_group_parent, int menuIndex) {
   if (newSpeakerGroupParent == nullptr) {
     newSpeakerGroupParent = selected_group_parent;
-    return;
+    return false;
   } else if (menuIndex == 0) {
     newSpeakerGroupParent = nullptr;
-    return;
+    return false;
   }
 
   std::vector<HomeAssistantSpeakerMediaPlayer*> speakerList;
@@ -322,6 +322,7 @@ void HomeAssistantMediaPlayerGroup::selectGroup(
   } else {
     speaker->joinGroup(newSpeakerGroupParent->get_entity_id());
   }
+  return true;
 }
 
 bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
