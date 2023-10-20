@@ -98,7 +98,7 @@ void HomeAssistantBaseMediaPlayer::selectSource(
       "media_player.select_source",
       {
           {"entity_id", entity_id_},
-          {"source", source->get_media_content_id().c_str()},
+          {"source", source->get_media_content_id()},
       });
 }
 
@@ -110,9 +110,9 @@ void HomeAssistantBaseMediaPlayer::playMedia(
   call_homeassistant_service(
       "media_player.play_media",
       {
-          {"entity_id", this->entity_id_.c_str()},
-          {"media_content_id", source->get_media_content_id().c_str()},
-          {"media_content_type", source->sourceTypeString().c_str()},
+          {"entity_id", this->entity_id_},
+          {"media_content_id", source->get_media_content_id()},
+          {"media_content_type", source->sourceTypeString()},
       });
 }
 
@@ -518,7 +518,7 @@ void HomeAssistantBaseMediaPlayer::toggle_repeat() {
   call_homeassistant_service("media_player.repeat_set",
                              {
                                  {"entity_id", this->entity_id_},
-                                 {"repeat", repeat_title.c_str()},
+                                 {"repeat", repeat_title},
                              });
 }
 
@@ -557,14 +557,14 @@ void HomeAssistantBaseMediaPlayer::updateVolumeLevel() {
     // unmute all speakers
     call_homeassistant_service("media_player.volume_mute",
                                {
-                                   {"entity_id", this->entity_id_.c_str()},
+                                   {"entity_id", this->entity_id_},
                                    {"is_volume_muted", "false"},
                                });
   }
   ESP_LOGI(TAG, "%s volume update %f", this->entity_id_.c_str(), volume);
   call_homeassistant_service("media_player.volume_set",
                              {
-                                 {"entity_id", this->entity_id_.c_str()},
+                                 {"entity_id", this->entity_id_},
                                  {"volume_level", to_string(volume)},
                              });
 }
