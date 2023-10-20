@@ -110,7 +110,7 @@ void HomeAssistantBaseMediaPlayer::playMedia(
   call_homeassistant_service(
       "media_player.play_media",
       {
-          {"entity_id", this->entity_id_},
+          {"entity_id", this->entity_id_.c_str()},
           {"media_content_id", source->get_media_content_id().c_str()},
           {"media_content_type", source->sourceTypeString().c_str()},
       });
@@ -165,7 +165,10 @@ void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
     std::string state) {
   ESP_LOGI(TAG, "player_supported_features_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
-  actionable_features_.clear();
+  if (actionable_features_.size() > 0) {
+    actionable_features_.clear();
+    actionable_features_ = {};
+  }
   if (playerState == NoRemotePlayerState) {
     ESP_LOGW(TAG,
              "player_supported_features_changed: %s updated without state. "

@@ -79,7 +79,7 @@ class HomeAssistantBaseMediaPlayer
   }
   const std::vector<MediaPlayerFeatureCommand*>* get_option_menu_features(
       bool bottomMenu) {
-    if (actionable_features_.size() > 0) {
+    if (!actionable_features_.empty()) {
       return &actionable_features_;
     }
     bool power_set = false;
@@ -138,8 +138,6 @@ class HomeAssistantBaseMediaPlayer
       ESP_LOGI("media_player", "command: %s", command->get_title().c_str());
       actionable_features_.push_back(command);
     }
-    supported_features_.clear();
-    custom_commands_.clear();
     return &actionable_features_;
   }
 
@@ -176,7 +174,7 @@ class HomeAssistantBaseMediaPlayer
   MediaPlayerRepeatMode repeat_mode_ = NOT_SET;
   float volume_step_ = 0.04;
   std::vector<MediaPlayerSupportedFeature> supported_features_ = {};
-  std::vector<MediaPlayerFeatureCommand*> actionable_features_ = {};
+  std::vector<MediaPlayerFeatureCommand*> actionable_features_;
   std::vector<MediaPlayerFeatureCommand*> custom_commands_ = {};
   std::vector<media_player_source::MediaPlayerSourceBase*> sources_;
   std::vector<std::string> groupMembers;
