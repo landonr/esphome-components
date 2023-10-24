@@ -55,7 +55,7 @@ void HomeAssistantSpeakerMediaPlayer::updateVolumeLevel() {
                                    {"is_volume_muted", "false"},
                                });
   }
-  ESP_LOGI(TAG, "%s volume update %f", entityIds.c_str(), volume);
+  ESP_LOGI(TAG, "%s volume update %f group members %d", entityIds.c_str(), volume, groupMembers.size());
   call_homeassistant_service("media_player.volume_set",
                              {
                                  {"entity_id", entityIds},

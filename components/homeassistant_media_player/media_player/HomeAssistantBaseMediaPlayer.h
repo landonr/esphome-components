@@ -78,68 +78,7 @@ class HomeAssistantBaseMediaPlayer
     return &supported_features_;
   }
   const std::vector<MediaPlayerFeatureCommand*>* get_option_menu_features(
-      bool bottomMenu) {
-    if (!actionable_features_.empty()) {
-      return &actionable_features_;
-    }
-    bool power_set = false;
-    for (auto& feature : supported_features_) {
-      ESP_LOGI("media_player", "get_option_menu_features: %s feature: %s",
-               this->entity_id_.c_str(),
-               supported_feature_string(feature).c_str());
-      switch (feature) {
-        case SHUFFLE_SET:
-        case GROUPING:
-        case REPEAT_SET:
-        case TV_BACK:
-        case TV_HOME:
-          break;
-        case CUSTOM_COMMAND:
-          continue;
-        case PAUSE:
-        case NEXT_TRACK:
-          if (bottomMenu || get_player_type() == TVRemotePlayerType)
-            break;
-          continue;
-        case VOLUME_SET:
-          if (bottomMenu) {
-            auto volume_up = new MediaPlayerFeatureCommand(VOLUME_UP);
-            volume_up->set_title(supported_feature_string(VOLUME_UP));
-            auto volume_down = new MediaPlayerFeatureCommand(VOLUME_DOWN);
-            volume_down->set_title(supported_feature_string(VOLUME_DOWN));
-            actionable_features_.push_back(volume_up);
-            actionable_features_.push_back(volume_down);
-            continue;
-          }
-          continue;
-        case TURN_ON:
-        case TURN_OFF: {
-          if (!power_set) {
-            power_set = true;
-            auto new_command = new MediaPlayerFeatureCommand(POWER_SET);
-            new_command->set_title(supported_feature_string(POWER_SET));
-            actionable_features_.push_back(new_command);
-          }
-          continue;
-        }
-        default:
-          continue;
-      }
-      auto new_command = new MediaPlayerFeatureCommand(feature);
-      new_command->set_title(supported_feature_string(feature));
-      actionable_features_.push_back(new_command);
-    }
-    if (get_player_type() == TVRemotePlayerType || bottomMenu) {
-      auto new_command = new MediaPlayerFeatureCommand(MENU_HOME);
-      new_command->set_title(supported_feature_string(MENU_HOME));
-      actionable_features_.push_back(new_command);
-    }
-    for (auto& command : custom_commands_) {
-      ESP_LOGI("media_player", "command: %s", command->get_title().c_str());
-      actionable_features_.push_back(command);
-    }
-    return &actionable_features_;
-  }
+      bool bottomMenu);
 
   bool supports(MediaPlayerSupportedFeature feature);
 
@@ -173,9 +112,9 @@ class HomeAssistantBaseMediaPlayer
   bool shuffle_ = false;
   MediaPlayerRepeatMode repeat_mode_ = NOT_SET;
   float volume_step_ = 0.04;
-  std::vector<MediaPlayerSupportedFeature> supported_features_ = {};
+  std::vector<MediaPlayerSupportedFeature> supported_features_;
   std::vector<MediaPlayerFeatureCommand*> actionable_features_;
-  std::vector<MediaPlayerFeatureCommand*> custom_commands_ = {};
+  std::vector<MediaPlayerFeatureCommand*> custom_commands_;
   std::vector<media_player_source::MediaPlayerSourceBase*> sources_;
   std::vector<std::string> groupMembers;
 
