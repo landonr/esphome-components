@@ -37,12 +37,12 @@ bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
 }
 
 void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
-  if (playerSearchFinished || loadedPlayers < 1) {
+  if ((finished_loading_sensor_ == NULL || finished_loading_sensor_->state == true) || loadedPlayers < 1) {
     return;
   }
   for (auto& speaker : media_players_) {
     if (speaker->playerState != NoRemotePlayerState) {
-      playerSearchFinished = true;
+      finished_loading_sensor_->publish_state(true);
       setActivePlayer(speaker);
       // display->updateDisplay(true);
       return;
@@ -51,7 +51,7 @@ void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
 }
 
 void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
-  if (playerSearchFinished) {
+  if (finished_loading_sensor_ == NULL || finished_loading_sensor_->state == true) {
     return;
   }
   HomeAssistantBaseMediaPlayer* newActivePlayer = NULL;
@@ -126,7 +126,7 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
     ESP_LOGI(TAG, "setting active player %s",
              newActivePlayer->get_entity_id().c_str());
     setActivePlayer(newActivePlayer);
-    playerSearchFinished = true;
+    finished_loading_sensor_->publish_state(true);
     if (!background) {
       // display->updateDisplay(true);
     }
@@ -138,6 +138,7 @@ void HomeAssistantMediaPlayerGroup::setActivePlayer(
   ESP_LOGI(TAG, "New active player %s",
            newActivePlayer->get_entity_id().c_str());
   active_player_ = newActivePlayer;
+  publish_state(0);
 }
 
 void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
@@ -326,7 +327,8 @@ bool HomeAssistantMediaPlayerGroup::selectGroup(
 }
 
 bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
-  if (!playerSearchFinished) {
+  if (!(finished_loading_sensor_ != NULL &&
+        finished_loading_sensor_->state == false)) {
     return false;
   }
   bool updateDisplay = false;
@@ -492,15 +494,6 @@ HomeAssistantMediaPlayerGroup::activePlayerSources() {
 
 // private
 
-void HomeAssistantMediaPlayerGroup::syncActivePlayer(RemotePlayerState state) {
-  if (loadedPlayers < totalPlayers()) {
-    return;
-  }
-  ESP_LOGI(TAG, "Syncing active player %d", state);
-  playerSearchFinished = false;
-  findActivePlayer(true);
-}
-
 void HomeAssistantMediaPlayerGroup::state_updated(
     HomeAssistantBaseMediaPlayer* player) {
   ESP_LOGD(TAG, "state update callback %d %d", active_player_ == NULL,
@@ -545,33 +538,29 @@ void HomeAssistantMediaPlayerGroup::state_updated(
       publish_state(0);
     }
     return;
-  } else if (!sync_active_player) {
-    publish_state(0);
-    return;
   }
 
   auto state = player->playerState;
   ESP_LOGD(TAG,
-           "Trying to sync active player, state: %d activePlayerNull: %d, "
-           "sync_active_player: %d",
-           state, active_player_ == NULL, sync_active_player == true);
+           "Trying to sync active player, state: %d activePlayerNull: %d, ",
+           state, active_player_ == NULL);
   switch (state) {
     case homeassistant_media_player::RemotePlayerState::NoRemotePlayerState:
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
     case homeassistant_media_player::RemotePlayerState::
         UnavailableRemotePlayerState:
       ESP_LOGD(TAG, "Trying to sync active player - 1");
-      syncActivePlayer(state);
+      findActivePlayer(false);
       break;
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:
       if (active_player_ == NULL) {
         ESP_LOGD(TAG, "Trying to sync active player - 2");
-        syncActivePlayer(state);
+        findActivePlayer(false);
       } else if (active_player_->playerState < state) {
         ESP_LOGD(TAG, "Trying to sync active player - 3 %d",
                  active_player_->playerState);
-        syncActivePlayer(state);
+        findActivePlayer(false);
       }
       break;
     case homeassistant_media_player::RemotePlayerState::
@@ -579,7 +568,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(
     case homeassistant_media_player::RemotePlayerState::
         StoppedRemotePlayerState:
       ESP_LOGD(TAG, "Trying to sync active player - 4");
-      syncActivePlayer(state);
+      findActivePlayer(false);
   }
   publish_state(0);
 }

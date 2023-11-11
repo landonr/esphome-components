@@ -9,6 +9,7 @@
 #include "media_player/HomeAssistantSpeakerMediaPlayer.h"
 #include "media_player/HomeAssistantTVMediaPlayer.h"
 #include "media_player/JSONTextHelpers.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
@@ -38,7 +39,6 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
                                       public sensor::Sensor {
  public:
   HomeAssistantBaseMediaPlayer* active_player_ = NULL;
-  bool playerSearchFinished = false;
   int loadedPlayers = 0;
   HomeAssistantBaseMediaPlayer* newSpeakerGroupParent = NULL;
 
@@ -76,7 +76,6 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
   void call_feature(MediaPlayerSupportedFeature feature);
   std::vector<media_player_source::MediaPlayerSourceBase*>*
   activePlayerSources();
-  void syncActivePlayer(RemotePlayerState state);
   void playSource(media_player_source::MediaPlayerSourceItem* source);
   float get_setup_priority() const override { return setup_priority::LATE; }
   void set_active_player_source_index(int active_player_source_index) {
@@ -90,13 +89,17 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
     std::string result = new_source_name;
     return result;
   }
+  void set_finished_loading_sensor(
+      binary_sensor::BinarySensor* finished_loading_sensor) {
+    finished_loading_sensor_ = finished_loading_sensor;
+  }
 
  private:
   std::vector<HomeAssistantBaseMediaPlayer*> media_players_;
   void state_updated(HomeAssistantBaseMediaPlayer* player);
-  bool sync_active_player = false;
   int active_player_source_index_ = -1;
   std::string new_source_name = "";
+  binary_sensor::BinarySensor* finished_loading_sensor_ = NULL;
 };
 
 }  // namespace homeassistant_media_player
