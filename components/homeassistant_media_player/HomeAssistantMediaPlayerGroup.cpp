@@ -141,7 +141,7 @@ void HomeAssistantMediaPlayerGroup::setActivePlayer(
   ESP_LOGI(TAG, "New active player %s",
            newActivePlayer->get_entity_id().c_str());
   active_player_ = newActivePlayer;
-  publish_state(0);
+  publish_state();
 }
 
 void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
@@ -443,7 +443,7 @@ void HomeAssistantMediaPlayerGroup::call_feature(
     case TURN_ON:
     case TURN_OFF:
     case POWER_SET:
-      sendActivePlayerRemoteCommand(POWER);
+      sendActivePlayerRemoteCommand(MEDIA_PLAYER_TV_COMMAND_POWER);
       break;
     case SHUFFLE_SET:
       toggle_shuffle();
@@ -452,13 +452,13 @@ void HomeAssistantMediaPlayerGroup::call_feature(
       toggle_mute();
       break;
     case TV_BACK:
-      sendActivePlayerRemoteCommand(BACK);
+      sendActivePlayerRemoteCommand(MEDIA_PLAYER_TV_COMMAND_BACK);
       break;
     case TV_HOME:
-      sendActivePlayerRemoteCommand(HOME);
+      sendActivePlayerRemoteCommand(MEDIA_PLAYER_TV_COMMAND_HOME);
       break;
     case PAUSE:
-      active_player_->playPause();
+      active_player_->toggle();
       break;
     case REPEAT_SET:
       toggle_repeat();
@@ -537,7 +537,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(
   }
   if (active_player_ != NULL) {
     if (active_player_ == player) {
-      publish_state(0);
+      publish_state();
     }
     return;
   }
@@ -572,7 +572,7 @@ void HomeAssistantMediaPlayerGroup::state_updated(
       ESP_LOGD(TAG, "Trying to sync active player - 4");
       findActivePlayer(false);
   }
-  publish_state(0);
+  publish_state();
 }
 
 void HomeAssistantMediaPlayerGroup::playSource(
@@ -588,5 +588,67 @@ void HomeAssistantMediaPlayerGroup::playSource(
   active_player_->playSource(source);
 }
 
+void HomeAssistantMediaPlayerGroup::control(
+    const media_player::MediaPlayerCall& call) {
+  ESP_LOGI(TAG, "control:");
+  if (active_player_ == NULL) {
+    return;
+  }
+  if (call.get_command().has_value()) {
+    switch (call.get_command().value()) {
+      case media_player::MEDIA_PLAYER_COMMAND_PLAY:
+        ESP_LOGI(TAG, "control: %s play",
+                 this->active_player_->get_entity_id().c_str());
+        active_player_->play();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_PAUSE:
+        ESP_LOGI(TAG, "control: %s pause",
+                 this->active_player_->get_entity_id().c_str());
+        active_player_->pause();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_STOP:
+        ESP_LOGI(TAG, "control: %s stop",
+                 this->active_player_->get_entity_id().c_str());
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_MUTE:
+        ESP_LOGI(TAG, "control: %s mute",
+                 this->active_player_->get_entity_id().c_str());
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_UNMUTE:
+        ESP_LOGI(TAG, "control: %s unmute",
+                 this->active_player_->get_entity_id().c_str());
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_TOGGLE:
+        ESP_LOGI(TAG, "control: %s toggle",
+                 this->active_player_->get_entity_id().c_str());
+        active_player_->toggle();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_VOLUME_UP:
+        ESP_LOGI(TAG, "control: %s volume up",
+                 this->active_player_->get_entity_id().c_str());
+        increaseSpeakerVolume();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_VOLUME_DOWN:
+        ESP_LOGI(TAG, "control: %s volume down",
+                 this->active_player_->get_entity_id().c_str());
+        decreaseSpeakerVolume();
+        break;
+    }
+  }
+  this->publish_state();
+}
+
+void HomeAssistantMediaPlayerGroup::tvRemoteCommand(
+    MediaPlayerTVRemoteCommand command) {
+  if (active_player_ == NULL) {
+    return;
+  }
+  if (active_player_->get_player_type() ==
+      homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
+    HomeAssistantTVMediaPlayer* activeTV =
+        static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
+    activeTV->tvRemoteCommand(command);
+  }
+}
 }  // namespace homeassistant_media_player
 }  // namespace esphome

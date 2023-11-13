@@ -9,17 +9,17 @@ namespace esphome {
 namespace homeassistant_media_player {
 
 enum MediaPlayerTVRemoteCommand {
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT,
-  SELECT,
-  BACK,
-  HOME,
-  POWER,
-  VOLUME_UP_COMMAND,
-  VOLUME_DOWN_COMMAND,
-  PAUSE_COMMAND
+  MEDIA_PLAYER_TV_COMMAND_UP,
+  MEDIA_PLAYER_TV_COMMAND_DOWN,
+  MEDIA_PLAYER_TV_COMMAND_LEFT,
+  MEDIA_PLAYER_TV_COMMAND_RIGHT,
+  MEDIA_PLAYER_TV_COMMAND_SELECT,
+  MEDIA_PLAYER_TV_COMMAND_BACK,
+  MEDIA_PLAYER_TV_COMMAND_HOME,
+  MEDIA_PLAYER_TV_COMMAND_POWER,
+  MEDIA_PLAYER_TV_COMMAND_VOLUME_UP,
+  MEDIA_PLAYER_TV_COMMAND_VOLUME_DOWN,
+  MEDIA_PLAYER_TV_COMMAND_PAUSE
 };
 
 class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
@@ -41,6 +41,11 @@ class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
     soundbar_ = new_soundbar;
   }
   HomeAssistantBaseMediaPlayer* get_soundbar() { return soundbar_; }
+
+  HomeAssistantTVMediaPlayer& set_command(MediaPlayerTVRemoteCommand command);
+  HomeAssistantTVMediaPlayer& set_command(
+      optional<MediaPlayerTVRemoteCommand> command);
+  HomeAssistantTVMediaPlayer& set_command(const std::string& command);
 
  protected:
   HomeAssistantBaseMediaPlayer* soundbar_{nullptr};

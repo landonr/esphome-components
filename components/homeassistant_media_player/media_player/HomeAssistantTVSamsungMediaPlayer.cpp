@@ -25,27 +25,27 @@ void HomeAssistantTVSamsungMediaPlayer::subscribe_media_artist() {
 std::string HomeAssistantTVSamsungMediaPlayer::stringForRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
   switch (command) {
-    case UP:
+    case MEDIA_PLAYER_TV_COMMAND_UP:
       return "KEY_UP";
-    case DOWN:
+    case MEDIA_PLAYER_TV_COMMAND_DOWN:
       return "KEY_DOWN";
-    case LEFT:
+    case MEDIA_PLAYER_TV_COMMAND_LEFT:
       return "KEY_LEFT";
-    case RIGHT:
+    case MEDIA_PLAYER_TV_COMMAND_RIGHT:
       return "KEY_RIGHT";
-    case SELECT:
+    case MEDIA_PLAYER_TV_COMMAND_SELECT:
       return "KEY_ENTER";
-    case BACK:
+    case MEDIA_PLAYER_TV_COMMAND_BACK:
       return "KEY_RETURN";
-    case HOME:
+    case MEDIA_PLAYER_TV_COMMAND_HOME:
       return "KEY_HOME";
-    case POWER:
+    case MEDIA_PLAYER_TV_COMMAND_POWER:
       return "KEY_CHDOWN";
-    case VOLUME_UP:
+    case MEDIA_PLAYER_TV_COMMAND_VOLUME_UP:
       return "KEY_VOLUP";
-    case VOLUME_DOWN:
+    case MEDIA_PLAYER_TV_COMMAND_VOLUME_DOWN:
       return "KEY_VOLDOWN";
-    case PAUSE_COMMAND:
+    case MEDIA_PLAYER_TV_COMMAND_PAUSE:
       return "KEY_PAUSE";
   }
   return "";

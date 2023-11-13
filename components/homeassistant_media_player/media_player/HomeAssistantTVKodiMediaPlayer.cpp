@@ -32,27 +32,27 @@ void HomeAssistantTVKodiMediaPlayer::subscribe_media_artist() {
 std::string HomeAssistantTVKodiMediaPlayer::stringForRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
   switch (command) {
-    case UP:
+    case MEDIA_PLAYER_TV_COMMAND_UP:
       return "Input.Up";
-    case DOWN:
+    case MEDIA_PLAYER_TV_COMMAND_DOWN:
       return "Input.Down";
-    case LEFT:
+    case MEDIA_PLAYER_TV_COMMAND_LEFT:
       return "Input.Left";
-    case RIGHT:
+    case MEDIA_PLAYER_TV_COMMAND_RIGHT:
       return "Input.Right";
-    case SELECT:
+    case MEDIA_PLAYER_TV_COMMAND_SELECT:
       return "Input.Select";
-    case BACK:
+    case MEDIA_PLAYER_TV_COMMAND_BACK:
       return "Input.Back";
-    case HOME:
+    case MEDIA_PLAYER_TV_COMMAND_HOME:
       return "Input.ContextMenu";
-    case POWER:
+    case MEDIA_PLAYER_TV_COMMAND_POWER:
       return "power";
-    case VOLUME_UP:
+    case MEDIA_PLAYER_TV_COMMAND_VOLUME_UP:
       return "volume_up";
-    case VOLUME_DOWN:
+    case MEDIA_PLAYER_TV_COMMAND_VOLUME_DOWN:
       return "volume_down";
-    case PAUSE_COMMAND:
+    case MEDIA_PLAYER_TV_COMMAND_PAUSE:
       return "pause";
   }
   return "";

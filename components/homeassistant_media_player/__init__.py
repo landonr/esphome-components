@@ -17,7 +17,7 @@ from esphome.components.homeassistant_media_player.media_player import (
     CONF_SAMSUNG,
     CONF_ANDROID_TV,
 )
-from esphome.components import sensor, binary_sensor
+from esphome.components import media_player, binary_sensor
 
 CONF_MEDIA_PLAYERS = "media_players"
 CONF_FINISHED_LOADING = "finished_loading"
@@ -61,7 +61,7 @@ HOMEASSISTANT_MEDIA_PLAYER_REFERENCE_SCHEMA = cv.typed_schema(
 )
 
 HomeAssistantMediaPlayerGroup = homeassistant_media_player_ns.class_(
-    'HomeAssistantMediaPlayerGroup', cg.Component, sensor.Sensor
+    'HomeAssistantMediaPlayerGroup', cg.Component, HomeAssistantTVMediaPlayer
 )
 
 CONFIG_SCHEMA = cv.Schema(

@@ -58,7 +58,7 @@ void HomeAssistantTVMediaPlayer::increaseVolume() {
     get_soundbar()->increaseVolume();
     return;
   }
-  tvRemoteCommand(VOLUME_UP_COMMAND);
+  tvRemoteCommand(MEDIA_PLAYER_TV_COMMAND_VOLUME_UP);
 }
 
 void HomeAssistantTVMediaPlayer::decreaseVolume() {
@@ -66,11 +66,14 @@ void HomeAssistantTVMediaPlayer::decreaseVolume() {
     get_soundbar()->decreaseVolume();
     return;
   }
-  tvRemoteCommand(VOLUME_DOWN_COMMAND);
+  tvRemoteCommand(MEDIA_PLAYER_TV_COMMAND_VOLUME_DOWN);
 }
 
 void HomeAssistantTVMediaPlayer::tvRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
+  if (entity_id_.length() == 0) {
+    return;
+  }
   std::string remoteName = entity_id_.substr(12).insert(0, "remote");
   auto commandString = stringForRemoteCommand(command);
   ESP_LOGI(TAG, "tvRemoteCommand: %s, %s", commandString.c_str(),
@@ -80,6 +83,40 @@ void HomeAssistantTVMediaPlayer::tvRemoteCommand(
                                  {"entity_id", remoteName},
                                  {"command", commandString.c_str()},
                              });
+}
+
+HomeAssistantTVMediaPlayer& HomeAssistantTVMediaPlayer::set_command(
+    MediaPlayerTVRemoteCommand command) {
+  // this->command_ = command;
+  tvRemoteCommand(command);
+  return *this;
+}
+HomeAssistantTVMediaPlayer& HomeAssistantTVMediaPlayer::set_command(
+    optional<MediaPlayerTVRemoteCommand> command) {
+  // this->command_ = command;
+  if (command.has_value()) {
+    tvRemoteCommand(command.value());
+  }
+  return *this;
+}
+HomeAssistantTVMediaPlayer& HomeAssistantTVMediaPlayer::set_command(
+    const std::string& command) {
+  // if (str_equals_case_insensitive(command, "PLAY")) {
+  //   this->set_command(MEDIA_PLAYER_COMMAND_PLAY);
+  // } else if (str_equals_case_insensitive(command, "PAUSE")) {
+  //   this->set_command(MEDIA_PLAYER_COMMAND_PAUSE);
+  // } else if (str_equals_case_insensitive(command, "STOP")) {
+  //   this->set_command(MEDIA_PLAYER_COMMAND_STOP);
+  // } else if (str_equals_case_insensitive(command, "MUTE")) {
+  //   this->set_command(MEDIA_PLAYER_COMMAND_MUTE);
+  // } else if (str_equals_case_insensitive(command, "UNMUTE")) {
+  //   this->set_command(MEDIA_PLAYER_COMMAND_UNMUTE);
+  // } else if (str_equals_case_insensitive(command, "TOGGLE")) {
+  //   this->set_command(MEDIA_PLAYER_COMMAND_TOGGLE);
+  // } else {
+  //   ESP_LOGW(TAG, "'%s' - Unrecognized command %s", this->parent_->get_name().c_str(), command.c_str());
+  // }
+  return *this;
 }
 
 }  // namespace homeassistant_media_player

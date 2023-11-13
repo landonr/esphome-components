@@ -18,28 +18,22 @@ void HomeAssistantTVAndroidMediaPlayer::setup() {
 std::string HomeAssistantTVAndroidMediaPlayer::stringForRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
   switch (command) {
-    case UP:
+    case MEDIA_PLAYER_TV_COMMAND_UP:
       return "DPAD_UP";
-    case DOWN:
+    case MEDIA_PLAYER_TV_COMMAND_DOWN:
       return "DPAD_DOWN";
-    case LEFT:
+    case MEDIA_PLAYER_TV_COMMAND_LEFT:
       return "DPAD_LEFT";
-    case RIGHT:
+    case MEDIA_PLAYER_TV_COMMAND_RIGHT:
       return "DPAD_RIGHT";
-    case SELECT:
+    case MEDIA_PLAYER_TV_COMMAND_SELECT:
       return "DPAD_CENTER";
-    case BACK:
+    case MEDIA_PLAYER_TV_COMMAND_BACK:
       return "BACK";
-    case HOME:
+    case MEDIA_PLAYER_TV_COMMAND_HOME:
       return "HOME";
-    case POWER:
+    case MEDIA_PLAYER_TV_COMMAND_POWER:
       return "power";
-    case VOLUME_UP:
-      return "VOLUME_UP";
-    case VOLUME_DOWN:
-      return "VOLUME_DOWN";
-    case PAUSE_COMMAND:
-      return "MEDIA_PLAY_PAUSE";
   }
   return "";
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include "esphome/components/api/custom_api_device.h"
 #include "esphome/components/binary_sensor/binary_sensor.h"
+#include "esphome/components/media_player/media_player.h"
 #include "esphome/components/media_player_source/MediaPlayerSourceBase.h"
 #include "esphome/components/sensor/sensor.h"
 #include "media_player/HomeAssistantBaseMediaPlayer.h"
@@ -34,9 +35,7 @@ class TVSetup {
   SpeakerSetup* soundBar;
 };
 
-class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
-                                      public Component,
-                                      public sensor::Sensor {
+class HomeAssistantMediaPlayerGroup : public HomeAssistantTVMediaPlayer {
  public:
   HomeAssistantBaseMediaPlayer* active_player_ = NULL;
   int loadedPlayers = 0;
@@ -93,6 +92,12 @@ class HomeAssistantMediaPlayerGroup : public api::CustomAPIDevice,
       binary_sensor::BinarySensor* finished_loading_sensor) {
     finished_loading_sensor_ = finished_loading_sensor;
   }
+  void control(const media_player::MediaPlayerCall& call) override;
+  std::string stringForRemoteCommand(
+      MediaPlayerTVRemoteCommand command) override {
+    return "";
+  }
+  void tvRemoteCommand(MediaPlayerTVRemoteCommand command) override;
 
  private:
   std::vector<HomeAssistantBaseMediaPlayer*> media_players_;

@@ -38,9 +38,25 @@ void HomeAssistantBaseMediaPlayer::playSource(
   }
 }
 
-void HomeAssistantBaseMediaPlayer::playPause() {
+void HomeAssistantBaseMediaPlayer::toggle() {
   ESP_LOGI(TAG, "%s play pause", this->entity_id_.c_str());
   call_homeassistant_service("media_player.media_play_pause",
+                             {
+                                 {"entity_id", this->entity_id_},
+                             });
+}
+
+void HomeAssistantBaseMediaPlayer::play() {
+  ESP_LOGI(TAG, "%s play", this->entity_id_.c_str());
+  call_homeassistant_service("media_player.media_play",
+                             {
+                                 {"entity_id", this->entity_id_},
+                             });
+}
+
+void HomeAssistantBaseMediaPlayer::pause() {
+  ESP_LOGI(TAG, "%s pause", this->entity_id_.c_str());
+  call_homeassistant_service("media_player.media_pause",
                              {
                                  {"entity_id", this->entity_id_},
                              });
@@ -548,7 +564,7 @@ void HomeAssistantBaseMediaPlayer::control(
         break;
       case media_player::MEDIA_PLAYER_COMMAND_TOGGLE:
         ESP_LOGI(TAG, "control: %s toggle", this->entity_id_.c_str());
-        playPause();
+        toggle();
         break;
       case media_player::MEDIA_PLAYER_COMMAND_VOLUME_UP:
         ESP_LOGI(TAG, "control: %s volume up", this->entity_id_.c_str());

@@ -18,27 +18,27 @@ void HomeAssistantTVRokuMediaPlayer::setup() {
 std::string HomeAssistantTVRokuMediaPlayer::stringForRemoteCommand(
     MediaPlayerTVRemoteCommand command) {
   switch (command) {
-    case UP:
+    case MEDIA_PLAYER_TV_COMMAND_UP:
       return "up";
-    case DOWN:
+    case MEDIA_PLAYER_TV_COMMAND_DOWN:
       return "down";
-    case LEFT:
+    case MEDIA_PLAYER_TV_COMMAND_LEFT:
       return "left";
-    case RIGHT:
+    case MEDIA_PLAYER_TV_COMMAND_RIGHT:
       return "right";
-    case SELECT:
+    case MEDIA_PLAYER_TV_COMMAND_SELECT:
       return "select";
-    case BACK:
+    case MEDIA_PLAYER_TV_COMMAND_BACK:
       return "back";
-    case HOME:
+    case MEDIA_PLAYER_TV_COMMAND_HOME:
       return "home";
-    case POWER:
+    case MEDIA_PLAYER_TV_COMMAND_POWER:
       return "power";
-    case VOLUME_UP:
+    case MEDIA_PLAYER_TV_COMMAND_VOLUME_UP:
       return "volume_up";
-    case VOLUME_DOWN:
+    case MEDIA_PLAYER_TV_COMMAND_VOLUME_DOWN:
       return "volume_down";
-    case PAUSE_COMMAND:
+    case MEDIA_PLAYER_TV_COMMAND_PAUSE:
       return "pause";
   }
   return "";
