@@ -37,7 +37,9 @@ bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
 }
 
 void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
-  if ((finished_loading_sensor_ == NULL || finished_loading_sensor_->state == true) || loadedPlayers < 1) {
+  if ((finished_loading_sensor_ == NULL ||
+       finished_loading_sensor_->state == true) ||
+      loadedPlayers < 1) {
     return;
   }
   for (auto& speaker : media_players_) {
@@ -51,7 +53,8 @@ void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
 }
 
 void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
-  if (finished_loading_sensor_ == NULL || finished_loading_sensor_->state == true) {
+  if (finished_loading_sensor_ == NULL ||
+      finished_loading_sensor_->state == true) {
     return;
   }
   HomeAssistantBaseMediaPlayer* newActivePlayer = NULL;
@@ -496,8 +499,7 @@ HomeAssistantMediaPlayerGroup::activePlayerSources() {
 
 void HomeAssistantMediaPlayerGroup::state_updated(
     HomeAssistantBaseMediaPlayer* player) {
-  ESP_LOGD(TAG, "state update callback %d %d", active_player_ == NULL,
-           sync_active_player);
+  ESP_LOGD(TAG, "state update callback %d", active_player_ == NULL);
   bool playerGrouped = player->get_group_members()->size() > 1;
   bool parentSet = player->get_parent_media_player() != NULL;
   bool setParent = !parentSet && playerGrouped;

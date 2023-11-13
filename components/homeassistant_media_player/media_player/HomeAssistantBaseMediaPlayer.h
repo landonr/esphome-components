@@ -118,6 +118,8 @@ class HomeAssistantBaseMediaPlayer
   std::vector<media_player_source::MediaPlayerSourceBase*> sources_;
   std::vector<std::string> groupMembers;
 
+  void control(const media_player::MediaPlayerCall& call) override;
+
   virtual void group_members_changed(std::string state);
   virtual void subscribe_media_artist();
   virtual void playMedia(media_player_source::MediaPlayerSourceItem* source);

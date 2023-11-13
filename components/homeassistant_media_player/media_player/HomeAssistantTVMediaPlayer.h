@@ -35,7 +35,6 @@ class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
   virtual void tvRemoteCommand(MediaPlayerTVRemoteCommand command);
   void increaseVolume() override;
   void decreaseVolume() override;
-  void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return TVRemotePlayerType; }
   void player_source_changed(std::string state);
   void set_soundbar(HomeAssistantBaseMediaPlayer* new_soundbar) {

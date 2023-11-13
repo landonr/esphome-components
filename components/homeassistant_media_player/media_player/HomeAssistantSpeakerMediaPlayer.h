@@ -18,7 +18,6 @@ class HomeAssistantSpeakerMediaPlayer : public HomeAssistantBaseMediaPlayer {
   void updateVolumeLevel() override;
   void clearSource() override;
   media_player::MediaPlayerTraits get_traits();
-  void control(const media_player::MediaPlayerCall& call);
   RemotePlayerType get_player_type() { return SpeakerRemotePlayerType; }
   void set_tv(HomeAssistantBaseMediaPlayer* new_tv) { tv = new_tv; }
   HomeAssistantBaseMediaPlayer* get_tv() { return tv; }

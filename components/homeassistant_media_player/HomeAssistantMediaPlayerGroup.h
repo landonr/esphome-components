@@ -3,13 +3,13 @@
 #include <string>
 #include <vector>
 #include "esphome/components/api/custom_api_device.h"
+#include "esphome/components/binary_sensor/binary_sensor.h"
 #include "esphome/components/media_player_source/MediaPlayerSourceBase.h"
 #include "esphome/components/sensor/sensor.h"
 #include "media_player/HomeAssistantBaseMediaPlayer.h"
 #include "media_player/HomeAssistantSpeakerMediaPlayer.h"
 #include "media_player/HomeAssistantTVMediaPlayer.h"
 #include "media_player/JSONTextHelpers.h"
-#include "esphome/components/binary_sensor/binary_sensor.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
