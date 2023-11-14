@@ -34,6 +34,12 @@ std::string HomeAssistantTVAndroidMediaPlayer::stringForRemoteCommand(
       return "HOME";
     case MEDIA_PLAYER_TV_COMMAND_POWER:
       return "power";
+    case MEDIA_PLAYER_TV_COMMAND_VOLUME_UP:
+      return "volume_up";
+    case MEDIA_PLAYER_TV_COMMAND_VOLUME_DOWN:
+      return "volume_down";
+    case MEDIA_PLAYER_TV_COMMAND_PAUSE:
+      return "pause";
   }
   return "";
 }
