@@ -38,9 +38,25 @@ void HomeAssistantBaseMediaPlayer::playSource(
   }
 }
 
-void HomeAssistantBaseMediaPlayer::playPause() {
+void HomeAssistantBaseMediaPlayer::toggle() {
   ESP_LOGI(TAG, "%s play pause", this->entity_id_.c_str());
   call_homeassistant_service("media_player.media_play_pause",
+                             {
+                                 {"entity_id", this->entity_id_},
+                             });
+}
+
+void HomeAssistantBaseMediaPlayer::play() {
+  ESP_LOGI(TAG, "%s play", this->entity_id_.c_str());
+  call_homeassistant_service("media_player.media_play",
+                             {
+                                 {"entity_id", this->entity_id_},
+                             });
+}
+
+void HomeAssistantBaseMediaPlayer::pause() {
+  ESP_LOGI(TAG, "%s pause", this->entity_id_.c_str());
+  call_homeassistant_service("media_player.media_pause",
                              {
                                  {"entity_id", this->entity_id_},
                              });
@@ -94,12 +110,11 @@ void HomeAssistantBaseMediaPlayer::selectSource(
   ESP_LOGI(TAG, "selectSource: %s %s %s %d", this->entity_id_.c_str(),
            source->get_media_content_id().c_str(),
            source->sourceTypeString().c_str(), source->get_media_type());
-  call_homeassistant_service(
-      "media_player.select_source",
-      {
-          {"entity_id", entity_id_},
-          {"source", source->get_media_content_id()},
-      });
+  call_homeassistant_service("media_player.select_source",
+                             {
+                                 {"entity_id", entity_id_},
+                                 {"source", source->get_media_content_id()},
+                             });
 }
 
 void HomeAssistantBaseMediaPlayer::playMedia(
@@ -161,69 +176,69 @@ void HomeAssistantBaseMediaPlayer::playerState_changed(std::string state) {
   this->publish_state();
 }
 
-  const std::vector<MediaPlayerFeatureCommand*>* HomeAssistantBaseMediaPlayer::get_option_menu_features(
-      bool bottomMenu) {
-    if (actionable_features_.size() > 0) {
-      return &actionable_features_;
-    }
-    bool power_set = false;
-    for (auto& feature : supported_features_) {
-      ESP_LOGI("media_player", "get_option_menu_features: %s feature: %s",
-               this->entity_id_.c_str(),
-               supported_feature_string(feature).c_str());
-      switch (feature) {
-        case SHUFFLE_SET:
-        case GROUPING:
-        case REPEAT_SET:
-        case TV_BACK:
-        case TV_HOME:
-          break;
-        case CUSTOM_COMMAND:
-          continue;
-        case PAUSE:
-        case NEXT_TRACK:
-          if (bottomMenu || get_player_type() == TVRemotePlayerType)
-            break;
-          continue;
-        case VOLUME_SET:
-          if (bottomMenu) {
-            auto volume_up = new MediaPlayerFeatureCommand(VOLUME_UP);
-            volume_up->set_title(supported_feature_string(VOLUME_UP));
-            auto volume_down = new MediaPlayerFeatureCommand(VOLUME_DOWN);
-            volume_down->set_title(supported_feature_string(VOLUME_DOWN));
-            actionable_features_.push_back(volume_up);
-            actionable_features_.push_back(volume_down);
-            continue;
-          }
-          continue;
-        case TURN_ON:
-        case TURN_OFF: {
-          if (!power_set) {
-            power_set = true;
-            auto new_command = new MediaPlayerFeatureCommand(POWER_SET);
-            new_command->set_title(supported_feature_string(POWER_SET));
-            actionable_features_.push_back(new_command);
-          }
-          continue;
-        }
-        default:
-          continue;
-      }
-      auto new_command = new MediaPlayerFeatureCommand(feature);
-      new_command->set_title(supported_feature_string(feature));
-      actionable_features_.push_back(new_command);
-    }
-    if (get_player_type() == TVRemotePlayerType || bottomMenu) {
-      auto new_command = new MediaPlayerFeatureCommand(MENU_HOME);
-      new_command->set_title(supported_feature_string(MENU_HOME));
-      actionable_features_.push_back(new_command);
-    }
-    for (auto& command : custom_commands_) {
-      ESP_LOGI("media_player", "command: %s", command->get_title().c_str());
-      actionable_features_.push_back(command);
-    }
+const std::vector<MediaPlayerFeatureCommand*>*
+HomeAssistantBaseMediaPlayer::get_option_menu_features(bool bottomMenu) {
+  if (actionable_features_.size() > 0) {
     return &actionable_features_;
   }
+  bool power_set = false;
+  for (auto& feature : supported_features_) {
+    ESP_LOGI("media_player", "get_option_menu_features: %s feature: %s",
+             this->entity_id_.c_str(),
+             supported_feature_string(feature).c_str());
+    switch (feature) {
+      case SHUFFLE_SET:
+      case GROUPING:
+      case REPEAT_SET:
+      case TV_BACK:
+      case TV_HOME:
+        break;
+      case CUSTOM_COMMAND:
+        continue;
+      case PAUSE:
+      case NEXT_TRACK:
+        if (bottomMenu || get_player_type() == TVRemotePlayerType)
+          break;
+        continue;
+      case VOLUME_SET:
+        if (bottomMenu) {
+          auto volume_up = new MediaPlayerFeatureCommand(VOLUME_UP);
+          volume_up->set_title(supported_feature_string(VOLUME_UP));
+          auto volume_down = new MediaPlayerFeatureCommand(VOLUME_DOWN);
+          volume_down->set_title(supported_feature_string(VOLUME_DOWN));
+          actionable_features_.push_back(volume_up);
+          actionable_features_.push_back(volume_down);
+          continue;
+        }
+        continue;
+      case TURN_ON:
+      case TURN_OFF: {
+        if (!power_set) {
+          power_set = true;
+          auto new_command = new MediaPlayerFeatureCommand(POWER_SET);
+          new_command->set_title(supported_feature_string(POWER_SET));
+          actionable_features_.push_back(new_command);
+        }
+        continue;
+      }
+      default:
+        continue;
+    }
+    auto new_command = new MediaPlayerFeatureCommand(feature);
+    new_command->set_title(supported_feature_string(feature));
+    actionable_features_.push_back(new_command);
+  }
+  if (get_player_type() == TVRemotePlayerType || bottomMenu) {
+    auto new_command = new MediaPlayerFeatureCommand(MENU_HOME);
+    new_command->set_title(supported_feature_string(MENU_HOME));
+    actionable_features_.push_back(new_command);
+  }
+  for (auto& command : custom_commands_) {
+    ESP_LOGI("media_player", "command: %s", command->get_title().c_str());
+    actionable_features_.push_back(command);
+  }
+  return &actionable_features_;
+}
 
 void HomeAssistantBaseMediaPlayer::player_supported_features_changed(
     std::string state) {
@@ -511,6 +526,59 @@ std::string HomeAssistantBaseMediaPlayer::filter(std::string str) {
   return output;
 }
 
+void HomeAssistantBaseMediaPlayer::control(
+    const media_player::MediaPlayerCall& call) {
+  ESP_LOGI(TAG, "control:");
+  if (call.get_command().has_value()) {
+    switch (call.get_command().value()) {
+      case media_player::MEDIA_PLAYER_COMMAND_PLAY:
+        ESP_LOGI(TAG, "control: %s play", this->entity_id_.c_str());
+        call_homeassistant_service("media_player.media_play",
+                                   {
+                                       {"entity_id", this->entity_id_},
+                                   });
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_PAUSE:
+        ESP_LOGI(TAG, "control: %s pause", this->entity_id_.c_str());
+        call_homeassistant_service("media_player.media_pause",
+                                   {
+                                       {"entity_id", this->entity_id_},
+                                   });
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_STOP:
+        ESP_LOGI(TAG, "control: %s stop", this->entity_id_.c_str());
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_MUTE:
+        ESP_LOGI(TAG, "control: %s mute", this->entity_id_.c_str());
+        call_homeassistant_service("media_player.media_mute",
+                                   {
+                                       {"entity_id", this->entity_id_},
+                                   });
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_UNMUTE:
+        ESP_LOGI(TAG, "control: %s unmute", this->entity_id_.c_str());
+        call_homeassistant_service("media_player.media_unmute",
+                                   {
+                                       {"entity_id", this->entity_id_},
+                                   });
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_TOGGLE:
+        ESP_LOGI(TAG, "control: %s toggle", this->entity_id_.c_str());
+        toggle();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_VOLUME_UP:
+        ESP_LOGI(TAG, "control: %s volume up", this->entity_id_.c_str());
+        increaseVolume();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_VOLUME_DOWN:
+        ESP_LOGI(TAG, "control: %s volume down", this->entity_id_.c_str());
+        decreaseVolume();
+        break;
+    }
+  }
+  this->publish_state();
+}
+
 void HomeAssistantBaseMediaPlayer::group_members_changed(std::string state) {
   ESP_LOGI(TAG, "group_members_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
@@ -593,29 +661,11 @@ void HomeAssistantBaseMediaPlayer::toggle_repeat() {
 }
 
 void HomeAssistantBaseMediaPlayer::increaseVolume() {
-  // if (speaker_volume == -1) {
-  //   localVolume = 0;
-  //   return;
-  // }
-  // if (localVolume + volume_step_ > 1) {
-  //   localVolume = 1;
-  // } else {
-  //   localVolume = localVolume + volume_step_;
-  // }
   volume = std::min(1.0f, volume + volume_step_);
   updateVolumeLevel();
 }
 
 void HomeAssistantBaseMediaPlayer::decreaseVolume() {
-  // if (speaker_volume == -1 || localVolume - volume_step_ < 0) {
-  //   localVolume = 0;
-  //   return;
-  // }
-  // if (localVolume - volume_step_ > 1) {
-  //   localVolume = 0;
-  // } else {
-  //   localVolume = localVolume - volume_step_;
-  // }
   volume = std::max(0.0f, volume - volume_step_);
   updateVolumeLevel();
 }

@@ -12,7 +12,7 @@ MediaPlayerCommand = homeassistant_media_player_ns.class_("MediaPlayerCommand")
 HomeAssistantBaseMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantBaseMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantSpeakerMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantSpeakerMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantTVMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVMediaPlayer", media_player.MediaPlayer, cg.Component)
-HomeAssistantTVRokuMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVRokuMediaPlayer", media_player.MediaPlayer, cg.Component)
+HomeAssistantTVRokuMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVRokuMediaPlayer", HomeAssistantTVMediaPlayer, cg.Component)
 HomeAssistantTVKodiMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVKodiMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantTVSamsungMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVSamsungMediaPlayer", media_player.MediaPlayer, cg.Component)
 HomeAssistantTVAndroidMediaPlayer = homeassistant_media_player_ns.class_("HomeAssistantTVAndroidMediaPlayer", media_player.MediaPlayer, cg.Component)
@@ -136,3 +136,49 @@ async def to_code(config):
                 trigger = cg.new_Pvariable(command[CONF_TRIGGER_ID], service)
                 await automation.build_automation(trigger, [], command)
             cg.add(var.register_custom_command(service))
+
+# Automation
+
+from esphome import automation
+from esphome.automation import maybe_simple_id
+
+UpAction = homeassistant_media_player_ns.class_(
+    "UpAction", automation.Action, cg.Parented.template(HomeAssistantTVMediaPlayer)
+)
+DownAction = homeassistant_media_player_ns.class_(
+    "DownAction", automation.Action, cg.Parented.template(HomeAssistantTVMediaPlayer)
+)
+LeftAction = homeassistant_media_player_ns.class_(
+    "LeftAction", automation.Action, cg.Parented.template(HomeAssistantTVMediaPlayer)
+)
+RightAction = homeassistant_media_player_ns.class_(
+    "RightAction", automation.Action, cg.Parented.template(HomeAssistantTVMediaPlayer)
+)
+SelectAction = homeassistant_media_player_ns.class_(
+    "SelectAction", automation.Action, cg.Parented.template(HomeAssistantTVMediaPlayer)
+)
+BackAction = homeassistant_media_player_ns.class_(
+    "BackAction", automation.Action, cg.Parented.template(HomeAssistantTVMediaPlayer)
+)
+HomeAction = homeassistant_media_player_ns.class_(
+    "HomeAction", automation.Action, cg.Parented.template(HomeAssistantTVMediaPlayer)
+)
+PowerAction = homeassistant_media_player_ns.class_(
+    "PowerAction", automation.Action, cg.Parented.template(HomeAssistantTVMediaPlayer)
+)
+
+MEDIA_PLAYER_TV_ACTION_SCHEMA = maybe_simple_id({cv.GenerateID(): cv.use_id(HomeAssistantTVMediaPlayer)})
+
+@automation.register_action("media_player.up", UpAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+@automation.register_action("media_player.down", DownAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+@automation.register_action("media_player.left", LeftAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+@automation.register_action("media_player.right", RightAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+@automation.register_action("media_player.select", SelectAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+@automation.register_action("media_player.back", BackAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+@automation.register_action("media_player.home", HomeAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+@automation.register_action("media_player.power", PowerAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+
+async def media_player_tv_action(config, action_id, template_arg, args):
+    var = cg.new_Pvariable(action_id, template_arg)
+    await cg.register_parented(var, config[CONF_ID])
+    return var

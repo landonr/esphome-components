@@ -37,12 +37,14 @@ bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
 }
 
 void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
-  if (playerSearchFinished || loadedPlayers < 1) {
+  if ((finished_loading_sensor_ == NULL ||
+       finished_loading_sensor_->state == true) ||
+      loadedPlayers < 1) {
     return;
   }
   for (auto& speaker : media_players_) {
     if (speaker->playerState != NoRemotePlayerState) {
-      playerSearchFinished = true;
+      finished_loading_sensor_->publish_state(true);
       setActivePlayer(speaker);
       // display->updateDisplay(true);
       return;
@@ -51,7 +53,8 @@ void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
 }
 
 void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
-  if (playerSearchFinished) {
+  if (finished_loading_sensor_ == NULL ||
+      finished_loading_sensor_->state == true) {
     return;
   }
   HomeAssistantBaseMediaPlayer* newActivePlayer = NULL;
@@ -126,7 +129,7 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
     ESP_LOGI(TAG, "setting active player %s",
              newActivePlayer->get_entity_id().c_str());
     setActivePlayer(newActivePlayer);
-    playerSearchFinished = true;
+    finished_loading_sensor_->publish_state(true);
     if (!background) {
       // display->updateDisplay(true);
     }
@@ -138,6 +141,7 @@ void HomeAssistantMediaPlayerGroup::setActivePlayer(
   ESP_LOGI(TAG, "New active player %s",
            newActivePlayer->get_entity_id().c_str());
   active_player_ = newActivePlayer;
+  publish_state();
 }
 
 void HomeAssistantMediaPlayerGroup::increaseSpeakerVolume() {
@@ -326,12 +330,15 @@ bool HomeAssistantMediaPlayerGroup::selectGroup(
 }
 
 bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
-  if (!playerSearchFinished) {
+  if ((finished_loading_sensor_ != NULL &&
+       finished_loading_sensor_->state == false)) {
+    ESP_LOGD(TAG, "updateMediaPosition: not finished loading");
     return false;
   }
   bool updateDisplay = false;
   for (auto& media_player : media_players_) {
     if (media_player->get_player_type() != SpeakerRemotePlayerType) {
+      ESP_LOGD(TAG, "updateMediaPosition: not speaker");
       continue;
     }
     HomeAssistantSpeakerMediaPlayer* speaker =
@@ -341,15 +348,20 @@ bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
         speaker->mediaPosition < speaker->mediaDuration) {
       speaker->mediaPosition++;
       updateDisplay = true;
+      ESP_LOGD(TAG, "updateMediaPosition: %s %d %d",
+               speaker->get_entity_id().c_str(), speaker->mediaPosition,
+               speaker->mediaDuration);
     }
   }
   if (active_player_ != NULL) {
     switch (active_player_->get_player_type()) {
       case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
         updateDisplay = false;
+        ESP_LOGD(TAG, "updateMediaPosition: tv");
         break;
       case homeassistant_media_player::RemotePlayerType::
           SpeakerRemotePlayerType:
+        ESP_LOGD(TAG, "updateMediaPosition: speaker");
         break;
     }
   }
@@ -438,7 +450,7 @@ void HomeAssistantMediaPlayerGroup::call_feature(
     case TURN_ON:
     case TURN_OFF:
     case POWER_SET:
-      sendActivePlayerRemoteCommand(POWER);
+      sendActivePlayerRemoteCommand(MEDIA_PLAYER_TV_COMMAND_POWER);
       break;
     case SHUFFLE_SET:
       toggle_shuffle();
@@ -447,13 +459,13 @@ void HomeAssistantMediaPlayerGroup::call_feature(
       toggle_mute();
       break;
     case TV_BACK:
-      sendActivePlayerRemoteCommand(BACK);
+      sendActivePlayerRemoteCommand(MEDIA_PLAYER_TV_COMMAND_BACK);
       break;
     case TV_HOME:
-      sendActivePlayerRemoteCommand(HOME);
+      sendActivePlayerRemoteCommand(MEDIA_PLAYER_TV_COMMAND_HOME);
       break;
     case PAUSE:
-      active_player_->playPause();
+      active_player_->toggle();
       break;
     case REPEAT_SET:
       toggle_repeat();
@@ -492,19 +504,9 @@ HomeAssistantMediaPlayerGroup::activePlayerSources() {
 
 // private
 
-void HomeAssistantMediaPlayerGroup::syncActivePlayer(RemotePlayerState state) {
-  if (loadedPlayers < totalPlayers()) {
-    return;
-  }
-  ESP_LOGI(TAG, "Syncing active player %d", state);
-  playerSearchFinished = false;
-  findActivePlayer(true);
-}
-
 void HomeAssistantMediaPlayerGroup::state_updated(
     HomeAssistantBaseMediaPlayer* player) {
-  ESP_LOGD(TAG, "state update callback %d %d", active_player_ == NULL,
-           sync_active_player);
+  ESP_LOGD(TAG, "state update callback %d", active_player_ == NULL);
   bool playerGrouped = player->get_group_members()->size() > 1;
   bool parentSet = player->get_parent_media_player() != NULL;
   bool setParent = !parentSet && playerGrouped;
@@ -542,36 +544,32 @@ void HomeAssistantMediaPlayerGroup::state_updated(
   }
   if (active_player_ != NULL) {
     if (active_player_ == player) {
-      publish_state(0);
+      publish_state();
     }
-    return;
-  } else if (!sync_active_player) {
-    publish_state(0);
     return;
   }
 
   auto state = player->playerState;
   ESP_LOGD(TAG,
-           "Trying to sync active player, state: %d activePlayerNull: %d, "
-           "sync_active_player: %d",
-           state, active_player_ == NULL, sync_active_player == true);
+           "Trying to sync active player, state: %d activePlayerNull: %d, ",
+           state, active_player_ == NULL);
   switch (state) {
     case homeassistant_media_player::RemotePlayerState::NoRemotePlayerState:
     case homeassistant_media_player::RemotePlayerState::PausedRemotePlayerState:
     case homeassistant_media_player::RemotePlayerState::
         UnavailableRemotePlayerState:
       ESP_LOGD(TAG, "Trying to sync active player - 1");
-      syncActivePlayer(state);
+      findActivePlayer(false);
       break;
     case homeassistant_media_player::RemotePlayerState::
         PlayingRemotePlayerState:
       if (active_player_ == NULL) {
         ESP_LOGD(TAG, "Trying to sync active player - 2");
-        syncActivePlayer(state);
+        findActivePlayer(false);
       } else if (active_player_->playerState < state) {
         ESP_LOGD(TAG, "Trying to sync active player - 3 %d",
                  active_player_->playerState);
-        syncActivePlayer(state);
+        findActivePlayer(false);
       }
       break;
     case homeassistant_media_player::RemotePlayerState::
@@ -579,9 +577,9 @@ void HomeAssistantMediaPlayerGroup::state_updated(
     case homeassistant_media_player::RemotePlayerState::
         StoppedRemotePlayerState:
       ESP_LOGD(TAG, "Trying to sync active player - 4");
-      syncActivePlayer(state);
+      findActivePlayer(false);
   }
-  publish_state(0);
+  publish_state();
 }
 
 void HomeAssistantMediaPlayerGroup::playSource(
@@ -595,6 +593,88 @@ void HomeAssistantMediaPlayerGroup::playSource(
     activeSpeaker->playlist_title = source->get_name();
   }
   active_player_->playSource(source);
+}
+
+void HomeAssistantMediaPlayerGroup::control(
+    const media_player::MediaPlayerCall& call) {
+  ESP_LOGI(TAG, "control:");
+  if (active_player_ == NULL) {
+    return;
+  }
+  if (call.get_command().has_value()) {
+    switch (call.get_command().value()) {
+      case media_player::MEDIA_PLAYER_COMMAND_PLAY:
+        ESP_LOGI(TAG, "control: %s play",
+                 this->active_player_->get_entity_id().c_str());
+        active_player_->play();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_PAUSE:
+        ESP_LOGI(TAG, "control: %s pause",
+                 this->active_player_->get_entity_id().c_str());
+        active_player_->pause();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_STOP:
+        ESP_LOGI(TAG, "control: %s stop",
+                 this->active_player_->get_entity_id().c_str());
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_MUTE:
+        ESP_LOGI(TAG, "control: %s mute",
+                 this->active_player_->get_entity_id().c_str());
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_UNMUTE:
+        ESP_LOGI(TAG, "control: %s unmute",
+                 this->active_player_->get_entity_id().c_str());
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_TOGGLE:
+        ESP_LOGI(TAG, "control: %s toggle",
+                 this->active_player_->get_entity_id().c_str());
+        active_player_->toggle();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_VOLUME_UP:
+        ESP_LOGI(TAG, "control: %s volume up",
+                 this->active_player_->get_entity_id().c_str());
+        increaseSpeakerVolume();
+        break;
+      case media_player::MEDIA_PLAYER_COMMAND_VOLUME_DOWN:
+        ESP_LOGI(TAG, "control: %s volume down",
+                 this->active_player_->get_entity_id().c_str());
+        decreaseSpeakerVolume();
+        break;
+    }
+  }
+  this->publish_state();
+}
+
+void HomeAssistantMediaPlayerGroup::tvRemoteCommand(
+    MediaPlayerTVRemoteCommand command) {
+  if (active_player_ == NULL) {
+    return;
+  }
+  if (active_player_->get_player_type() ==
+      homeassistant_media_player::RemotePlayerType::TVRemotePlayerType) {
+    HomeAssistantTVMediaPlayer* activeTV =
+        static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
+    activeTV->tvRemoteCommand(command);
+  }
+}
+
+void HomeAssistantMediaPlayerGroup::togglePower() {
+  if (active_player_ == NULL) {
+    return;
+  }
+
+  switch (active_player_->get_player_type()) {
+    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType: {
+      HomeAssistantTVMediaPlayer* activeTV =
+          static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
+      activeTV->tvRemoteCommand(MEDIA_PLAYER_TV_COMMAND_POWER);
+      break;
+    }
+    case homeassistant_media_player::RemotePlayerType::
+        SpeakerRemotePlayerType: {
+      active_player_->toggle();
+    }
+  }
 }
 
 }  // namespace homeassistant_media_player

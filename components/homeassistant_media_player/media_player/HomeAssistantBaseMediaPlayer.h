@@ -63,7 +63,9 @@ class HomeAssistantBaseMediaPlayer
   virtual RemotePlayerType get_player_type() { return player_type_; }
   void setup() override;
   void playSource(media_player_source::MediaPlayerSourceItem* source);
-  void playPause();
+  void toggle();
+  void play();
+  void pause();
   void nextTrack();
   std::string mediaTitleString();
   std::string mediaSubtitleString();
@@ -117,6 +119,8 @@ class HomeAssistantBaseMediaPlayer
   std::vector<MediaPlayerFeatureCommand*> custom_commands_;
   std::vector<media_player_source::MediaPlayerSourceBase*> sources_;
   std::vector<std::string> groupMembers;
+
+  void control(const media_player::MediaPlayerCall& call) override;
 
   virtual void group_members_changed(std::string state);
   virtual void subscribe_media_artist();
