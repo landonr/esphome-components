@@ -330,13 +330,15 @@ bool HomeAssistantMediaPlayerGroup::selectGroup(
 }
 
 bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
-  if (!(finished_loading_sensor_ != NULL &&
-        finished_loading_sensor_->state == false)) {
+  if ((finished_loading_sensor_ != NULL &&
+       finished_loading_sensor_->state == false)) {
+    ESP_LOGD(TAG, "updateMediaPosition: not finished loading");
     return false;
   }
   bool updateDisplay = false;
   for (auto& media_player : media_players_) {
     if (media_player->get_player_type() != SpeakerRemotePlayerType) {
+      ESP_LOGD(TAG, "updateMediaPosition: not speaker");
       continue;
     }
     HomeAssistantSpeakerMediaPlayer* speaker =
@@ -346,15 +348,20 @@ bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
         speaker->mediaPosition < speaker->mediaDuration) {
       speaker->mediaPosition++;
       updateDisplay = true;
+      ESP_LOGD(TAG, "updateMediaPosition: %s %d %d",
+               speaker->get_entity_id().c_str(), speaker->mediaPosition,
+               speaker->mediaDuration);
     }
   }
   if (active_player_ != NULL) {
     switch (active_player_->get_player_type()) {
       case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
         updateDisplay = false;
+        ESP_LOGD(TAG, "updateMediaPosition: tv");
         break;
       case homeassistant_media_player::RemotePlayerType::
           SpeakerRemotePlayerType:
+        ESP_LOGD(TAG, "updateMediaPosition: speaker");
         break;
     }
   }
@@ -650,5 +657,25 @@ void HomeAssistantMediaPlayerGroup::tvRemoteCommand(
     activeTV->tvRemoteCommand(command);
   }
 }
+
+void HomeAssistantMediaPlayerGroup::togglePower() {
+  if (active_player_ == NULL) {
+    return;
+  }
+
+  switch (active_player_->get_player_type()) {
+    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType: {
+      HomeAssistantTVMediaPlayer* activeTV =
+          static_cast<HomeAssistantTVMediaPlayer*>(active_player_);
+      activeTV->tvRemoteCommand(MEDIA_PLAYER_TV_COMMAND_POWER);
+      break;
+    }
+    case homeassistant_media_player::RemotePlayerType::
+        SpeakerRemotePlayerType: {
+      active_player_->toggle();
+    }
+  }
+}
+
 }  // namespace homeassistant_media_player
 }  // namespace esphome

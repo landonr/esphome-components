@@ -98,6 +98,7 @@ class HomeAssistantMediaPlayerGroup : public HomeAssistantTVMediaPlayer {
     return "";
   }
   void tvRemoteCommand(MediaPlayerTVRemoteCommand command) override;
+  void togglePower();
 
  private:
   std::vector<HomeAssistantBaseMediaPlayer*> media_players_;
