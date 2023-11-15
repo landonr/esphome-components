@@ -55,6 +55,10 @@ class HomeAssistantTVMediaPlayer : public HomeAssistantBaseMediaPlayer {
   media_player_source::MediaPlayerSourceInternal* device_sources{nullptr};
   virtual std::string stringForRemoteCommand(
       MediaPlayerTVRemoteCommand command);
+
+ private:
+  std::string replaceAll(std::string str, const std::string& from,
+                         const std::string& to);
 };
 }  // namespace homeassistant_media_player
 }  // namespace esphome

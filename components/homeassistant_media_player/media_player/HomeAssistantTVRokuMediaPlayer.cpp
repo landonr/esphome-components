@@ -1,5 +1,4 @@
 #include "HomeAssistantTVRokuMediaPlayer.h"
-#include "JSONTextHelpers.h"
 #include "esphome/core/log.h"
 
 namespace esphome {

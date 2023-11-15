@@ -10,7 +10,6 @@
 #include "media_player/HomeAssistantBaseMediaPlayer.h"
 #include "media_player/HomeAssistantSpeakerMediaPlayer.h"
 #include "media_player/HomeAssistantTVMediaPlayer.h"
-#include "media_player/JSONTextHelpers.h"
 
 namespace esphome {
 namespace homeassistant_media_player {
