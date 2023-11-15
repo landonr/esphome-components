@@ -30,6 +30,8 @@ void HomeAssistantBaseMediaPlayer::playSource(
     case media_player_source::MediaPlayerSourceTypeFavoriteItemID:
     case media_player_source::MediaPlayerSourceTypePlaylist:
     case media_player_source::MediaPlayerSourceTypeApp:
+    case media_player_source::MediaPlayerSourceTypeChannel:
+    case media_player_source::MediaPlayerSourceTypeURL:
       playMedia(source);
       break;
     case media_player_source::MediaPlayerSourceTypeSource:
