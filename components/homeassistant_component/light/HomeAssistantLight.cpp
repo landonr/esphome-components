@@ -317,6 +317,12 @@ void HomeAssistantLight::color_changed(std::string state) {
 
   update_supported_color_mode(light::ColorMode::RGB_WHITE);
   if (can_update_from_api()) {
+    if (state.find("None") != std::string::npos) {
+      ESP_LOGI(TAG, "'%s': (write %d) color changed to None",
+               get_name().c_str(), can_update_from_api());
+      this->light_state_->turn_off().perform();
+      return;
+    }
     auto localColor = extractFirstNumber(state);
     float red, green, blue;
     hsv_to_rgb(localColor, 1, 1, red, green, blue);
