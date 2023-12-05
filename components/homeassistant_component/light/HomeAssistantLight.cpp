@@ -27,6 +27,8 @@ void HomeAssistantLight::subscribe_states() {
                                 this->entity_id_, "hs_color");
   subscribe_homeassistant_state(&HomeAssistantLight::color_mode_changed,
                                 this->entity_id_, "color_mode");
+  subscribe_homeassistant_state(&HomeAssistantLight::effect_list_changed,
+                                this->entity_id_, "effect_list");
   subscribe_homeassistant_state(
       &HomeAssistantLight::supported_color_modes_changed, this->entity_id_,
       "supported_color_modes");
@@ -409,6 +411,17 @@ void HomeAssistantLight::supported_color_modes_changed(std::string state) {
 
 bool HomeAssistantLight::get_state() {
   return light_state_->remote_values.is_on();
+}
+
+void HomeAssistantLight::effect_list_changed(std::string state) {
+  ESP_LOGI(TAG, "'%s': effect_list changed to %s",
+           get_name().c_str(), state.c_str());
+  auto effects = split(state, ",");
+  for (auto effect : effects) {
+    auto newEffect = new HomeAssistantLightEffect(effect);
+    supportedEffects.push_back(newEffect);
+  }
+  light_state_->add_effects(supportedEffects);
 }
 
 }  // namespace homeassistant_light

@@ -9,6 +9,7 @@
 #include "esphome/components/light/light_state.h"
 #include "esphome/core/color.h"
 #include "esphome/core/component.h"
+#include "esphome/components/homeassistant_component/light/HomeAssistantLightEffect.h"
 
 namespace esphome {
 namespace homeassistant_light {
@@ -60,6 +61,7 @@ class HomeAssistantLight
   CallbackManager<void()> state_callback_{};
   light::LightState* light_state_{nullptr};
   light::LightTraits light_traits_ = light::LightTraits();
+  const std::vector<esphome::homeassistant_light::HomeAssistantLightEffect*> supportedEffects = {};
   void subscribe_states();
   void state_changed(std::string state);
   void min_mireds_changed(std::string state);
@@ -72,6 +74,7 @@ class HomeAssistantLight
   void color_changed(std::string state);
   void color_mode_changed(std::string state);
   void supported_color_modes_changed(std::string state);
+  void effect_list_changed(std::string state);
   void update_color_with_hsv(const float hsv_color);
   std::vector<std::string> split(const std::string& s,
                                  const std::string& delim);
