@@ -419,7 +419,7 @@ std::string HomeAssistantMediaPlayerGroup::mediaTitleString() {
       }
       return active_player_->mediaTitleString();
   }
-  return "";
+  return "none";
 }
 
 std::string HomeAssistantMediaPlayerGroup::mediaSubtitleString() {
@@ -432,7 +432,40 @@ std::string HomeAssistantMediaPlayerGroup::mediaSubtitleString() {
       }
       return active_player_->mediaSubtitleString();
   }
-  return "";
+  return "none";
+}
+
+std::string HomeAssistantMediaPlayerGroup::mediaAlbumString() {
+  switch (active_player_->get_player_type()) {
+    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+      return "tv";
+    case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
+      HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+          static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);
+      if (activeSpeaker != NULL) {
+        return activeSpeaker->mediaAlbumString();
+      }
+  }
+  return "none";
+}
+
+std::string HomeAssistantMediaPlayerGroup::mediaPlaylistString() {
+  return active_player_->mediaPlaylistString();
+}
+
+std::string HomeAssistantMediaPlayerGroup::queuePositionString() {
+  switch (active_player_->get_player_type()) {
+    case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
+      return "tv";
+    case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
+      HomeAssistantSpeakerMediaPlayer* activeSpeaker =
+          static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);
+      if (activeSpeaker != NULL) {
+        return to_string(activeSpeaker->queuePosition) + " of " +
+               to_string(activeSpeaker->queueSize);
+      }
+  }
+  return "none";
 }
 
 void HomeAssistantMediaPlayerGroup::sendActivePlayerRemoteCommand(
@@ -586,12 +619,6 @@ void HomeAssistantMediaPlayerGroup::playSource(
     media_player_source::MediaPlayerSourceItem* source) {
   active_player_->clearSource();
   new_source_name = source->get_name();
-  if (active_player_->get_player_type() ==
-      homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType) {
-    HomeAssistantSpeakerMediaPlayer* activeSpeaker =
-        static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);
-    activeSpeaker->playlist_title = source->get_name();
-  }
   active_player_->playSource(source);
 }
 

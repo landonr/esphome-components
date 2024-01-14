@@ -18,6 +18,12 @@ void HomeAssistantSpeakerMediaPlayer::subscribe_source() {
   subscribe_homeassistant_state(
       &HomeAssistantSpeakerMediaPlayer::media_content_id_changed,
       this->entity_id_, "media_content_id");
+  subscribe_homeassistant_state(
+      &HomeAssistantSpeakerMediaPlayer::queue_position_changed,
+      this->entity_id_, "queue_position");
+  subscribe_homeassistant_state(
+      &HomeAssistantSpeakerMediaPlayer::queue_size_changed, this->entity_id_,
+      "queue_size");
 }
 
 void HomeAssistantSpeakerMediaPlayer::ungroup() {
@@ -65,14 +71,21 @@ void HomeAssistantSpeakerMediaPlayer::updateVolumeLevel() {
 
 void HomeAssistantSpeakerMediaPlayer::clearSource() {
   HomeAssistantBaseMediaPlayer::clearSource();
-  playlist_title = "";
-  media_album_name = "";
+  mediaPlaylist = "";
+  mediaAlbum = "";
 }
+
+  std::string HomeAssistantSpeakerMediaPlayer::mediaAlbumString() {
+    if (mediaAlbum.length() > 0) {
+      return mediaAlbum;
+    }
+    return "x";  
+  }
 
 void HomeAssistantSpeakerMediaPlayer::media_album_changed(std::string state) {
   ESP_LOGI(TAG, "media_album_changed: %s changed to %s",
            this->entity_id_.c_str(), state.c_str());
-  media_album_name = state.c_str();
+  mediaAlbum = state.c_str();
   this->publish_state();
 }
 
@@ -97,6 +110,21 @@ media_player::MediaPlayerTraits HomeAssistantSpeakerMediaPlayer::get_traits() {
   auto traits = media_player::MediaPlayerTraits();
   traits.set_supports_pause(true);
   return traits;
+}
+
+void HomeAssistantSpeakerMediaPlayer::queue_size_changed(std::string state) {
+  ESP_LOGI(TAG, "queue_size_changed: %s changed to %s",
+           this->entity_id_.c_str(), state.c_str());
+  queueSize = atof(state.c_str());
+  this->publish_state();
+}
+
+void HomeAssistantSpeakerMediaPlayer::queue_position_changed(
+    std::string state) {
+  ESP_LOGI(TAG, "queue_position_changed: %s changed to %s",
+           this->entity_id_.c_str(), state.c_str());
+  queuePosition = atof(state.c_str());
+  this->publish_state();
 }
 
 }  // namespace homeassistant_media_player

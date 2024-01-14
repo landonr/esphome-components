@@ -100,11 +100,15 @@ std::string HomeAssistantBaseMediaPlayer::mediaSubtitleString() {
   return "";
 }
 
+std::string HomeAssistantBaseMediaPlayer::mediaPlaylistString() {
+  return mediaPlaylist;
+}
+
 void HomeAssistantBaseMediaPlayer::clearMedia() {
   clearSource();
   mediaTitle = "";
   mediaArtist = "";
-  playlist_title = "";
+  mediaPlaylist = "";
 }
 
 void HomeAssistantBaseMediaPlayer::selectSource(
@@ -407,9 +411,9 @@ void HomeAssistantBaseMediaPlayer::media_title_changed(std::string state) {
   if (strcmp("TV", state.c_str()) != 0) {
     mediaTitle = state.c_str();
   } else {
-    mediaTitle = "";
-    mediaArtist = "";
-    playlist_title = "";
+    mediaTitle = "clear";
+    mediaArtist = "clear";
+    mediaPlaylist = "clear";
     mediaPosition = -1;
   }
   mediaDuration = -1;
@@ -490,7 +494,7 @@ void HomeAssistantBaseMediaPlayer::playlist_changed(std::string state) {
   if (!can_update_from_api()) {
     return;
   }
-  playlist_title = state.c_str();
+  mediaPlaylist = state.c_str();
   this->publish_state();
 }
 

@@ -70,6 +70,9 @@ class HomeAssistantMediaPlayerGroup : public HomeAssistantTVMediaPlayer {
   std::string playTitleString();
   std::string mediaTitleString();
   std::string mediaSubtitleString();
+  std::string mediaAlbumString();
+  std::string mediaPlaylistString();
+  std::string queuePositionString();
   void sendActivePlayerRemoteCommand(MediaPlayerTVRemoteCommand command);
   void call_feature(MediaPlayerSupportedFeature feature);
   std::vector<media_player_source::MediaPlayerSourceBase*>*

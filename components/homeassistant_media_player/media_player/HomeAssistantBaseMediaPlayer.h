@@ -69,6 +69,7 @@ class HomeAssistantBaseMediaPlayer
   void nextTrack();
   std::string mediaTitleString();
   std::string mediaSubtitleString();
+  std::string mediaPlaylistString();
   void clearMedia();
   bool is_muted() const override { return this->muted_; }
   bool is_shuffling() const { return this->shuffle_; }
@@ -92,7 +93,6 @@ class HomeAssistantBaseMediaPlayer
 
   int mediaDuration = -1;
   int mediaPosition = -1;
-  std::string playlist_title = "";
 
   virtual void subscribe_source() {
     ESP_LOGI("homeassistant.media_player_base", "subscribe_source: %s",
@@ -112,6 +112,7 @@ class HomeAssistantBaseMediaPlayer
  protected:
   bool muted_ = false;
   bool shuffle_ = false;
+  std::string mediaPlaylist = "";
   MediaPlayerRepeatMode repeat_mode_ = NOT_SET;
   float volume_step_ = 0.04;
   std::vector<MediaPlayerSupportedFeature> supported_features_;
