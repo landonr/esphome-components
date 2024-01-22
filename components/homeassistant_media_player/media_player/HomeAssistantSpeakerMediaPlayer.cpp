@@ -75,12 +75,12 @@ void HomeAssistantSpeakerMediaPlayer::clearSource() {
   mediaAlbum = "";
 }
 
-  std::string HomeAssistantSpeakerMediaPlayer::mediaAlbumString() {
-    if (mediaAlbum.length() > 0) {
-      return mediaAlbum;
-    }
-    return "x";  
+std::string HomeAssistantSpeakerMediaPlayer::mediaAlbumString() {
+  if (mediaAlbum.length() > 0) {
+    return mediaAlbum;
   }
+  return "";
+}
 
 void HomeAssistantSpeakerMediaPlayer::media_album_changed(std::string state) {
   ESP_LOGI(TAG, "media_album_changed: %s changed to %s",
@@ -98,6 +98,9 @@ void HomeAssistantSpeakerMediaPlayer::media_content_id_changed(
   }
   if (state.find("spdif") != std::string::npos) {
     mediaSource = TVRemotePlayerMediaSource;
+    // clear mediaAlbum and mediaPlaylist when switching to TV
+    mediaAlbum = "";
+    mediaPlaylist = "";
   } else if (state.find("spotify") != std::string::npos) {
     mediaSource = SpotifyRemotePlayerMediaSource;
   } else {

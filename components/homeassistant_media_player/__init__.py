@@ -1,7 +1,7 @@
 import esphome.codegen as cg
-from esphome.components import sensor
+from esphome.components import text_sensor, binary_sensor
 import esphome.config_validation as cv
-from esphome.const import CONF_ID, CONF_ENTITY_ID, CONF_NAME
+from esphome.const import CONF_ID
 from esphome.components.homeassistant_media_player.media_player import (
     homeassistant_media_player_ns, 
     HomeAssistantSpeakerMediaPlayer, 
@@ -17,10 +17,10 @@ from esphome.components.homeassistant_media_player.media_player import (
     CONF_SAMSUNG,
     CONF_ANDROID_TV,
 )
-from esphome.components import media_player, binary_sensor
 
 CONF_MEDIA_PLAYERS = "media_players"
 CONF_FINISHED_LOADING = "finished_loading"
+CONF_ACTIVE_PLAYER = "active_player"
 AUTO_LOAD = ["sensor"]
 DEPENDENCIES = ["api", "sensor"]
 
@@ -71,6 +71,7 @@ CONFIG_SCHEMA = cv.Schema(
             cv.ensure_list(HOMEASSISTANT_MEDIA_PLAYER_REFERENCE_SCHEMA), cv.Length(min=1)
         ),
         cv.Optional(CONF_FINISHED_LOADING): binary_sensor.binary_sensor_schema(),
+        cv.Optional(CONF_ACTIVE_PLAYER): text_sensor.text_sensor_schema()
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
@@ -87,6 +88,11 @@ async def to_code(config):
     if finished_loading := config.get(CONF_FINISHED_LOADING):
         binary_sens = await binary_sensor.new_binary_sensor(finished_loading)
         cg.add(var.set_finished_loading_sensor(binary_sens))
+
+    if active_player := config.get(CONF_ACTIVE_PLAYER):
+        text_sens = await text_sensor.new_text_sensor(active_player)
+        cg.add(text_sens.set_internal(False))
+        cg.add(var.set_active_player_text_sensor(text_sens))
 
 # Automation
 

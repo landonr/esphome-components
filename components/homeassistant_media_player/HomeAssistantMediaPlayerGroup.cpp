@@ -141,6 +141,9 @@ void HomeAssistantMediaPlayerGroup::setActivePlayer(
   ESP_LOGI(TAG, "New active player %s",
            newActivePlayer->get_entity_id().c_str());
   active_player_ = newActivePlayer;
+  if(active_player_text_sensor_ != NULL) {
+    active_player_text_sensor_->publish_state(active_player_->get_entity_id());
+  }
   publish_state();
 }
 
@@ -438,7 +441,8 @@ std::string HomeAssistantMediaPlayerGroup::mediaSubtitleString() {
 std::string HomeAssistantMediaPlayerGroup::mediaAlbumString() {
   switch (active_player_->get_player_type()) {
     case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-      return "tv";
+      // return empty string because its duplicated on screen
+      return "";
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
       HomeAssistantSpeakerMediaPlayer* activeSpeaker =
           static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);
@@ -456,7 +460,8 @@ std::string HomeAssistantMediaPlayerGroup::mediaPlaylistString() {
 std::string HomeAssistantMediaPlayerGroup::queuePositionString() {
   switch (active_player_->get_player_type()) {
     case homeassistant_media_player::RemotePlayerType::TVRemotePlayerType:
-      return "tv";
+      // return empty string because its duplicated on screen
+      return "";
     case homeassistant_media_player::RemotePlayerType::SpeakerRemotePlayerType:
       HomeAssistantSpeakerMediaPlayer* activeSpeaker =
           static_cast<HomeAssistantSpeakerMediaPlayer*>(active_player_);

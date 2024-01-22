@@ -411,9 +411,9 @@ void HomeAssistantBaseMediaPlayer::media_title_changed(std::string state) {
   if (strcmp("TV", state.c_str()) != 0) {
     mediaTitle = state.c_str();
   } else {
-    mediaTitle = "clear";
-    mediaArtist = "clear";
-    mediaPlaylist = "clear";
+    mediaTitle = "";
+    mediaArtist = "";
+    mediaPlaylist = "";
     mediaPosition = -1;
   }
   mediaDuration = -1;

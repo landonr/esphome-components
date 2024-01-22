@@ -94,6 +94,10 @@ class HomeAssistantMediaPlayerGroup : public HomeAssistantTVMediaPlayer {
       binary_sensor::BinarySensor* finished_loading_sensor) {
     finished_loading_sensor_ = finished_loading_sensor;
   }
+  void set_active_player_text_sensor(
+      text_sensor::TextSensor* active_player_text_sensor) {
+    active_player_text_sensor_ = active_player_text_sensor;
+  }
   void control(const media_player::MediaPlayerCall& call) override;
   std::string stringForRemoteCommand(
       MediaPlayerTVRemoteCommand command) override {
@@ -108,6 +112,7 @@ class HomeAssistantMediaPlayerGroup : public HomeAssistantTVMediaPlayer {
   int active_player_source_index_ = -1;
   std::string new_source_name = "";
   binary_sensor::BinarySensor* finished_loading_sensor_ = NULL;
+  text_sensor::TextSensor* active_player_text_sensor_ = NULL;
 };
 
 }  // namespace homeassistant_media_player
