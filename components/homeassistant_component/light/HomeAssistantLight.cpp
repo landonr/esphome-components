@@ -130,78 +130,6 @@ void HomeAssistantLight::add_on_state_callback(
   this->state_callback_.add(std::move(callback));
 }
 
-void HomeAssistantLight::decTemperature() {
-  next_api_publish_ = true;
-  auto call = this->light_state_->make_call();
-  call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
-  if (!light_state_->remote_values.is_on()) {
-    call.set_state(true);
-    call.set_brightness(0.1);
-  }
-  float mired_step = static_cast<float>(light_traits_.get_max_mireds() -
-                                        light_traits_.get_min_mireds()) /
-                     20.0;
-  float color_temperature =
-      light_state_->remote_values.get_color_temperature() - mired_step;
-  call.set_color_temperature(
-      std::max(light_traits_.get_min_mireds(), color_temperature));
-  call.perform();
-}
-
-void HomeAssistantLight::incTemperature() {
-  next_api_publish_ = true;
-  auto call = this->light_state_->make_call();
-  call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
-  if (!light_state_->remote_values.is_on()) {
-    call.set_state(true);
-    call.set_brightness(0.1);
-  }
-  float mired_step = static_cast<float>(light_traits_.get_max_mireds() -
-                                        light_traits_.get_min_mireds()) /
-                     20.0;
-  float color_temperature =
-      light_state_->remote_values.get_color_temperature() + mired_step;
-  call.set_color_temperature(
-      std::min(light_traits_.get_max_mireds(), color_temperature));
-  call.perform();
-}
-
-void HomeAssistantLight::decBrightness() {
-  next_api_publish_ = true;
-  auto call = this->light_state_->make_call();
-  auto brightness = light_state_->remote_values.get_brightness() - 0.1;
-  if (brightness > 0) {
-    call.set_brightness(brightness);
-    ESP_LOGI(TAG, "'%s': brightness decreased to %f", get_name().c_str(),
-             brightness);
-  } else {
-    call.set_state(false);
-    ESP_LOGI(TAG, "'%s': brightness decreased to off", get_name().c_str());
-  }
-  call.perform();
-}
-
-void HomeAssistantLight::incBrightness() {
-  next_api_publish_ = true;
-  auto call = this->light_state_->make_call();
-  if (light_state_->remote_values.is_on()) {
-    auto brightness = light_state_->remote_values.get_brightness() + 0.1;
-    call.set_brightness(std::min(1.0, brightness));
-    ESP_LOGI(TAG, "'%s': brightness increased to %f", get_name().c_str(),
-             brightness);
-  } else {
-    call.set_state(true);
-    call.set_brightness(0.1);
-    ESP_LOGI(TAG, "'%s': brightness set to %f", get_name().c_str(), 0.1);
-  }
-  call.perform();
-}
-
-void HomeAssistantLight::toggle() {
-  next_api_publish_ = true;
-  this->light_state_->toggle().perform();
-}
-
 void HomeAssistantLight::update_color_with_hsv(const float hsv_color) {
   next_api_publish_ = true;
   auto call = this->light_state_->make_call();
@@ -221,20 +149,6 @@ void HomeAssistantLight::update_color_with_hsv(const float hsv_color) {
   hsv_to_rgb(hsv_color, 1, 1, red, green, blue);
   call.set_rgb(red, green, blue);
   call.perform();
-}
-
-void HomeAssistantLight::decColor() {
-  float color_step = 360.0f / 20.0f;
-  float hsv_color =
-      std::max(0.1f, get_hsv_color(get_light_state()) - color_step);
-  update_color_with_hsv(hsv_color);
-}
-
-void HomeAssistantLight::incColor() {
-  float color_step = 360.0f / 20.0f;
-  float hsv_color =
-      std::min(359.9f, get_hsv_color(get_light_state()) + color_step);
-  update_color_with_hsv(hsv_color);
 }
 
 void HomeAssistantLight::setAttribute(
@@ -262,6 +176,7 @@ void HomeAssistantLight::min_mireds_changed(std::string state) {
            can_update_from_api(), state.c_str());
   auto min_mireds = atoi(state.c_str());
   light_traits_.set_min_mireds(min_mireds);
+  next_api_publish_ = true;
 }
 void HomeAssistantLight::max_mireds_changed(std::string state) {
   next_api_publish_ = false;
@@ -269,6 +184,7 @@ void HomeAssistantLight::max_mireds_changed(std::string state) {
            can_update_from_api(), state.c_str());
   auto max_mireds = atoi(state.c_str());
   light_traits_.set_max_mireds(max_mireds);
+  next_api_publish_ = true;
 }
 void HomeAssistantLight::brightness_changed(std::string state) {
   next_api_publish_ = false;
@@ -281,6 +197,7 @@ void HomeAssistantLight::brightness_changed(std::string state) {
     auto call = this->light_state_->make_call();
     call.set_brightness(brightness.value() / this->max_value_);
     call.perform();
+  next_api_publish_ = true;
   }
 }
 void HomeAssistantLight::color_temp_changed(std::string state) {
@@ -295,6 +212,7 @@ void HomeAssistantLight::color_temp_changed(std::string state) {
     call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
     call.set_color_temperature(color_temp.value());
     call.perform();
+  next_api_publish_ = true;
   }
 }
 
@@ -331,6 +249,7 @@ void HomeAssistantLight::color_changed(std::string state) {
     call.set_rgb(red, green, blue);
     call.perform();
   }
+  next_api_publish_ = true;
 }
 
 optional<light::ColorMode> HomeAssistantLight::parse_color_mode(
@@ -376,6 +295,7 @@ void HomeAssistantLight::color_mode_changed(std::string state) {
     call.set_color_mode(parsed_color_mode.value());
     call.perform();
   }
+  next_api_publish_ = true;
 }
 
 std::vector<std::string> HomeAssistantLight::split(const std::string& s,

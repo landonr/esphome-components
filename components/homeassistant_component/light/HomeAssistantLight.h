@@ -42,13 +42,6 @@ class HomeAssistantLight
   void set_color_properties(std::map<std::string, std::string>* data,
                             light::LightState* state,
                             const light::ColorMode color_mode);
-  void decTemperature();
-  void incTemperature();
-  void decBrightness();
-  void incBrightness();
-  void toggle();
-  void decColor();
-  void incColor();
   void setAttribute(const std::map<std::string, std::string>& data);
   void setup_state(light::LightState* state) override;
   void update_state(light::LightState* state) override;
