@@ -90,6 +90,7 @@ async def to_code(config):
         cg.add(var.set_finished_loading_sensor(binary_sens))
 
     if active_player := config.get(CONF_ACTIVE_PLAYER):
+        cg.add_define("USE_TEXT_SENSOR")
         text_sens = await text_sensor.new_text_sensor(active_player)
         cg.add(text_sens.set_internal(False))
         cg.add(var.set_active_player_text_sensor(text_sens))
