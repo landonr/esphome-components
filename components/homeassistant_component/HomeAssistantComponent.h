@@ -16,9 +16,12 @@ class HomeAssistantComponent : public Component, public api::CustomAPIDevice {
  protected:
   std::string entity_id_;
   uint32_t ignore_update_until_ = 0;
+  uint32_t ignore_publish_until_ = 0;
   bool next_api_publish_ = false;
   bool can_update_from_api();
-  void ignore_api_updates_with_seconds(int seconds);
+  bool can_publish_to_api();
+  void ignore_api_updates_with_seconds(double seconds);
+  void ignore_publish_with_seconds(double seconds);
 };
 
 }  // namespace homeassistant_component

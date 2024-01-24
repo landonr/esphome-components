@@ -86,7 +86,6 @@ void HomeAssistantLight::set_color_properties(
 }
 
 void HomeAssistantLight::publish_api_state(light::LightState* state) {
-  next_api_publish_ = false;
   ignore_api_updates_with_seconds(2);
   ESP_LOGI(TAG, "publish_api_state: %s: new output state",
            state->get_name().c_str());
@@ -116,13 +115,13 @@ void HomeAssistantLight::publish_api_state(light::LightState* state) {
 
 void HomeAssistantLight::write_state(light::LightState* state) {
   ESP_LOGI(TAG, "'%s': Writing state %d - publish api state: %d",
-           get_name().c_str(), state->remote_values.is_on(), next_api_publish_);
-
-  if (next_api_publish_) {
+           get_name().c_str(), state->remote_values.is_on(),
+           can_publish_to_api());
+  if (can_publish_to_api()) {
     publish_api_state(state);
+    ignore_publish_with_seconds(0.5);
   }
   this->state_callback_.call();
-  next_api_publish_ = true;
 }
 
 void HomeAssistantLight::add_on_state_callback(
@@ -131,7 +130,6 @@ void HomeAssistantLight::add_on_state_callback(
 }
 
 void HomeAssistantLight::update_color_with_hsv(const float hsv_color) {
-  next_api_publish_ = true;
   auto call = this->light_state_->make_call();
   if (light_traits_.supports_color_mode(light::ColorMode::RGB)) {
     call.set_color_mode(light::ColorMode::RGB);
@@ -157,62 +155,58 @@ void HomeAssistantLight::setAttribute(
 }
 
 void HomeAssistantLight::state_changed(std::string state) {
-  next_api_publish_ = false;
-  auto onState = parse_on_off(state.c_str());
-  ESP_LOGI(
-      TAG,
-      "state_changed: '%s': (write %d) state changed to %d - publish disabled",
-      get_name().c_str(), can_update_from_api(), onState);
+  auto onState =
+      parse_on_off(state.c_str()) == esphome::ParseOnOffState::PARSE_ON;
+  ESP_LOGI(TAG,
+           "state_changed: '%s': (write %d) state changed to %s onState is %d "
+           "- publish disabled",
+           get_name().c_str(), can_update_from_api(), state.c_str(), onState);
+
+  ignore_publish_with_seconds(1);
   auto call = this->light_state_->make_call();
-  call.set_state(onState == esphome::ParseOnOffState::PARSE_ON);
-  if (onState != esphome::ParseOnOffState::PARSE_ON) {
+  call.set_state(onState);
+  if (!onState) {
     call.set_brightness(0);
   }
   call.perform();
 }
 void HomeAssistantLight::min_mireds_changed(std::string state) {
-  next_api_publish_ = false;
   ESP_LOGI(TAG, "'%s': (write %d) min_mireds changed to %s", get_name().c_str(),
            can_update_from_api(), state.c_str());
   auto min_mireds = atoi(state.c_str());
   light_traits_.set_min_mireds(min_mireds);
-  next_api_publish_ = true;
 }
 void HomeAssistantLight::max_mireds_changed(std::string state) {
-  next_api_publish_ = false;
   ESP_LOGI(TAG, "'%s': (write %d) max_mireds changed to %s", get_name().c_str(),
            can_update_from_api(), state.c_str());
   auto max_mireds = atoi(state.c_str());
   light_traits_.set_max_mireds(max_mireds);
-  next_api_publish_ = true;
 }
 void HomeAssistantLight::brightness_changed(std::string state) {
-  next_api_publish_ = false;
   ESP_LOGI(TAG, "'%s': (write %d) brightness changed to %s", get_name().c_str(),
            can_update_from_api(), state.c_str());
   auto brightness = parse_number<float>(state);
   update_supported_color_mode(light::ColorMode::BRIGHTNESS);
 
   if (can_update_from_api() && brightness.has_value()) {
+    ignore_publish_with_seconds(1);
     auto call = this->light_state_->make_call();
     call.set_brightness(brightness.value() / this->max_value_);
     call.perform();
-  next_api_publish_ = true;
   }
 }
 void HomeAssistantLight::color_temp_changed(std::string state) {
-  next_api_publish_ = false;
   ESP_LOGI(TAG, "'%s': (write %d) color_temp changed to %s", get_name().c_str(),
            can_update_from_api(), state.c_str());
   update_supported_color_mode(light::ColorMode::COLOR_TEMPERATURE);
 
   auto color_temp = parse_number<int>(state);
   if (can_update_from_api() && color_temp.has_value()) {
+    ignore_publish_with_seconds(1);
     auto call = this->light_state_->make_call();
     call.set_color_mode(light::ColorMode::COLOR_TEMPERATURE);
     call.set_color_temperature(color_temp.value());
     call.perform();
-  next_api_publish_ = true;
   }
 }
 
@@ -229,12 +223,12 @@ int HomeAssistantLight::extractFirstNumber(std::string input) {
 }
 
 void HomeAssistantLight::color_changed(std::string state) {
-  next_api_publish_ = false;
   ESP_LOGI(TAG, "'%s': (write %d) color changed to %s", get_name().c_str(),
            can_update_from_api(), state.c_str());
 
   update_supported_color_mode(light::ColorMode::RGB_WHITE);
   if (can_update_from_api()) {
+    ignore_publish_with_seconds(1);
     if (state.find("None") != std::string::npos) {
       ESP_LOGI(TAG, "'%s': (write %d) color changed to None",
                get_name().c_str(), can_update_from_api());
@@ -249,7 +243,6 @@ void HomeAssistantLight::color_changed(std::string state) {
     call.set_rgb(red, green, blue);
     call.perform();
   }
-  next_api_publish_ = true;
 }
 
 optional<light::ColorMode> HomeAssistantLight::parse_color_mode(
@@ -285,17 +278,16 @@ void HomeAssistantLight::update_supported_color_mode(light::ColorMode mode) {
 }
 
 void HomeAssistantLight::color_mode_changed(std::string state) {
-  next_api_publish_ = false;
   ESP_LOGI(TAG, "'%s': (write %d) color_mode changed changed to %s",
            get_name().c_str(), can_update_from_api(), state.c_str());
   auto parsed_color_mode = parse_color_mode(state);
-  if (parsed_color_mode.has_value()) {
+  if (can_update_from_api() && parsed_color_mode.has_value()) {
+    ignore_publish_with_seconds(1);
     update_supported_color_mode(parsed_color_mode.value());
     auto call = this->light_state_->make_call();
     call.set_color_mode(parsed_color_mode.value());
     call.perform();
   }
-  next_api_publish_ = true;
 }
 
 std::vector<std::string> HomeAssistantLight::split(const std::string& s,
