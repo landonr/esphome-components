@@ -64,8 +64,11 @@ void HomeAssistantLight::set_color_properties(
     case light::ColorMode::ON_OFF:
     case light::ColorMode::BRIGHTNESS:
     case light::ColorMode::WHITE:
+    case light::ColorMode::RGB:
+    case light::ColorMode::RGB_WHITE:
       break;
     case light::ColorMode::COLOR_TEMPERATURE:
+    case light::ColorMode::RGB_COLOR_TEMPERATURE:
     case light::ColorMode::COLD_WARM_WHITE: {
       auto color_temp =
           static_cast<int>(state->remote_values.get_color_temperature());
@@ -74,9 +77,6 @@ void HomeAssistantLight::set_color_properties(
       }
       break;
     };
-    case light::ColorMode::RGB:
-    case light::ColorMode::RGB_WHITE:
-    case light::ColorMode::RGB_COLOR_TEMPERATURE:
     case light::ColorMode::RGB_COLD_WARM_WHITE: {
       (*data)["hue"] = to_string(get_hsv_color(state));
       (*data)["saturation"] = "100";
