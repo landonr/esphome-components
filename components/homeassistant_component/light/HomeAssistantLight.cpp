@@ -259,15 +259,15 @@ optional<light::ColorMode> HomeAssistantLight::parse_color_mode(
   } else if (color_mode.find("hs") != std::string::npos) {
     ESP_LOGI(TAG, "Parsed color mode: COLOR_TEMPERATURE");
     return light::ColorMode::COLOR_TEMPERATURE;
-  } else if (color_mode.find("rgb") != std::string::npos) {
-    ESP_LOGI(TAG, "Parsed color mode: RGB");
-    return light::ColorMode::RGB;
-  } else if (color_mode.find("rgbw") != std::string::npos) {
-    ESP_LOGI(TAG, "Parsed color mode: RGB_WHITE");
-    return light::ColorMode::RGB_WHITE;
   } else if (color_mode.find("rgbww") != std::string::npos) {
     ESP_LOGI(TAG, "Parsed color mode: RGB_COLD_WARM_WHITE");
     return light::ColorMode::RGB_COLD_WARM_WHITE;
+  } else if (color_mode.find("rgbw") != std::string::npos) {
+    ESP_LOGI(TAG, "Parsed color mode: RGB_WHITE");
+    return light::ColorMode::RGB_WHITE;
+  } else if (color_mode.find("rgb") != std::string::npos) {
+    ESP_LOGI(TAG, "Parsed color mode: RGB");
+    return light::ColorMode::RGB;
   } else if (color_mode.find("white") != std::string::npos) {
     ESP_LOGI(TAG, "Parsed color mode: WHITE");
     return light::ColorMode::WHITE;
