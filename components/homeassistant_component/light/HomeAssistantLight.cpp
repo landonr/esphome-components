@@ -318,7 +318,7 @@ void HomeAssistantLight::supported_color_modes_changed(std::string state) {
   }
   for(auto mode : supportedModes) {
     ESP_LOGI(TAG, "'%s': (write %d) supported_color_modes_changed changed to %d",
-           get_name().c_str(), can_update_from_api(), mode);
+             get_name().c_str(), can_update_from_api(), static_cast<uint8_t>(mode));
   }
   light_traits_.set_supported_color_modes(supportedModes);
 }
