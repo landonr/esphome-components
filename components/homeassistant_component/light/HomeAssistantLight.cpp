@@ -64,8 +64,6 @@ void HomeAssistantLight::set_color_properties(
     case light::ColorMode::ON_OFF:
     case light::ColorMode::BRIGHTNESS:
     case light::ColorMode::WHITE:
-    case light::ColorMode::RGB:
-    case light::ColorMode::RGB_WHITE:
       break;
     case light::ColorMode::COLOR_TEMPERATURE:
     case light::ColorMode::RGB_COLOR_TEMPERATURE:
@@ -77,6 +75,8 @@ void HomeAssistantLight::set_color_properties(
       }
       break;
     };
+    case light::ColorMode::RGB:
+    case light::ColorMode::RGB_WHITE:
     case light::ColorMode::RGB_COLD_WARM_WHITE: {
       (*data)["hue"] = to_string(get_hsv_color(state));
       (*data)["saturation"] = "100";
@@ -100,7 +100,7 @@ void HomeAssistantLight::publish_api_state(light::LightState* state) {
       data["brightness"] = to_string(brightness);
     }
     set_color_properties(&data, state, color_mode);
-    if (color_mode == light::ColorMode::RGB_WHITE) {
+    if (color_mode == light::ColorMode::RGB_WHITE || color_mode == light::ColorMode::RGB || color_mode == light::ColorMode::RGB_COLD_WARM_WHITE) {
       call_homeassistant_service("script.hs_light_set", data);
     } else {
       call_homeassistant_service("light.turn_on", data);
