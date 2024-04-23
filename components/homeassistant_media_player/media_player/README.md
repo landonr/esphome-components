@@ -22,10 +22,10 @@ The integration supports various media player types:
 - **Speaker**: Represents a Home Assistant media player entity that is a speaker.
 - **TV**: Represents a Home Assistant media player entity that is a TV.
 - **TV Types**:
-    - **Roku**: Represents a Home Assistant Roku TV media player.
-    - **Kodi**: Represents a Home Assistant Kodi TV media player.
-    - **Samsung**: Represents a Home Assistant Samsung TV media player.
-    - **Android TV**: Represents a Home Assistant Android TV media player.
+    - **roku**: Represents a Home Assistant Roku TV media player.
+    - **kodi**: Represents a Home Assistant Kodi TV media player.
+    - **samsung**: Represents a Home Assistant Samsung TV media player.
+    - **android_tv**: Represents a Home Assistant Android TV media player.
 
 ### Common Schema
 
@@ -39,84 +39,83 @@ The integration supports various media player types:
 ### Specific Media Player Configurations
 
 1. **Speaker Configuration**:
-    ```yaml
-    speaker:
-      id: my_speaker
-      name: "Living Room Speaker"
-      entity_id: media_player.living_room_speaker
-      sources:
-        - id: my_source
-      commands:
-        - id: my_command
-          name: "My Command"
-    ```
+```yaml
+media_player:
+  platform: homeassistant_media_player
+  name: Sonos Beam
+  entity_id: "media_player.beam"
+  id: media_player_beam
+  type: speaker
+
+  # optional
+  sources:
+    - id: sonos
+      type: sonos
+  commands:
+    name: "group all"
+    command:
+      - homeassistant.service:
+          service: script.sonos_group_all
+```
+
+2. **Spotify Speaker Configuration**:
+```yaml
+media_player:
+  platform: homeassistant_media_player
+  name: Spotify
+  entity_id: "media_player.spotify_landorghini"
+  id: media_player_spotify
+  type: speaker
+
+  # optional
+  sources:
+    - id: spotty
+      type: spotify
+```
 
 2. **TV Configuration**:
-    ```yaml
-    tv:
-      id: my_tv
-      name: "Living Room TV"
-      entity_id: media_player.living_room_tv
-      sources:
-        - id: my_source
-      commands:
-        - id: my_command
-          name: "My Command"
-      soundbar:
-        speaker: my_speaker
-    ```
+```yaml
+media_player:
+  platform: homeassistant_media_player
+  type: roku
+  name: Roku TV
+  entity_id: "media_player.55_tcl_roku_tv"
+  id: media_player_tv
 
-3. **Roku TV Configuration**:
-    ```yaml
-    roku:
-      id: my_roku_tv
-      name: "Living Room Roku TV"
-      entity_id: media_player.living_room_roku_tv
-      sources:
-        - id: my_source
-      commands:
-        - id: my_command
-          name: "My Command"
-    ```
+  # optional
+  soundbar:
+    speaker: media_player_beam
+```
 
 4. **Kodi TV Configuration**:
-    ```yaml
-    kodi:
-      id: my_kodi_tv
-      name: "Living Room Kodi TV"
-      entity_id: media_player.living_room_kodi_tv
-      sources:
-        - id: my_source
-      commands:
-        - id: my_command
-          name: "My Command"
-    ```
+```yaml
+media_player:
+  platform: homeassistant_media_player
+  type: kodi
+  name: Kodi Desktop
+  entity_id: "media_player.kodi_desktop"
+  id: media_player_kodi
+```
 
 5. **Samsung TV Configuration**:
-    ```yaml
-    samsung:
-      id: my_samsung_tv
-      name: "Living Room Samsung TV"
-      entity_id: media_player.living_room_samsung_tv
-      sources:
-        - id: my_source
-      commands:
-        - id: my_command
-          name: "My Command"
-    ```
+```yaml
+media_player:
+  platform: homeassistant_media_player
+  type: samsumg
+  id: my_samsung_tv
+  name: "Living Room Samsung TV"
+  entity_id: media_player.living_room_samsung_tv
+```
 
 6. **Android TV Configuration**:
-    ```yaml
-    android_tv:
-      id: my_android_tv
-      name: "Living Room Android TV"
-      entity_id: media_player.living_room_android_tv
-      sources:
-        - id: my_source
-      commands:
-        - id: my_command
-          name: "My Command"
-    ```
+```yaml
+media_player:
+  platform: homeassistant_media_player
+  type: android_tv
+  id: my_android_tv
+  name: "Living Room Android TV"
+  entity_id: media_player.living_room_android_tv
+```
 
 ## Automation Actions
 
