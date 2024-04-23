@@ -38,7 +38,7 @@ The integration supports various media player types:
 
 ### Specific Media Player Configurations
 
-1. **Speaker Configuration**:
+1. #### Speaker Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -58,7 +58,7 @@ media_player:
           service: script.sonos_group_all
 ```
 
-2. **Spotify Speaker Configuration**:
+2. #### Spotify Speaker Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -73,7 +73,7 @@ media_player:
       type: spotify
 ```
 
-2. **TV Configuration**:
+2. #### TV Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -87,7 +87,7 @@ media_player:
     speaker: media_player_beam
 ```
 
-4. **Kodi TV Configuration**:
+4. #### Kodi TV Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -97,7 +97,7 @@ media_player:
   id: media_player_kodi
 ```
 
-5. **Samsung TV Configuration**:
+5. #### Samsung TV Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -107,7 +107,7 @@ media_player:
   entity_id: media_player.living_room_samsung_tv
 ```
 
-6. **Android TV Configuration**:
+6. #### Android TV Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
