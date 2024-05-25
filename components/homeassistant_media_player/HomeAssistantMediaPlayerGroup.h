@@ -116,6 +116,7 @@ class HomeAssistantMediaPlayerGroup : public HomeAssistantTVMediaPlayer {
   int active_player_source_index_ = -1;
   std::string new_source_name = "";
   binary_sensor::BinarySensor* finished_loading_sensor_ = NULL;
+  bool finished_loading_ = false;
 
 #ifdef USE_TEXT_SENSOR
   text_sensor::TextSensor* active_player_text_sensor_ = NULL;

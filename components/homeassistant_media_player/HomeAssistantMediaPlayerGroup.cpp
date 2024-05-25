@@ -37,14 +37,16 @@ bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
 }
 
 void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
-  if ((finished_loading_sensor_ == NULL ||
-       finished_loading_sensor_->state == true) ||
+  if (finished_loading_ ||
       loadedPlayers < 1) {
     return;
   }
   for (auto& speaker : media_players_) {
     if (speaker->playerState != NoRemotePlayerState) {
-      finished_loading_sensor_->publish_state(true);
+      if (finished_loading_sensor_ != NULL) {
+        finished_loading_sensor_->publish_state(true);
+      }
+      finished_loading_ = true;
       setActivePlayer(speaker);
       // display->updateDisplay(true);
       return;
@@ -53,8 +55,7 @@ void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
 }
 
 void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
-  if (finished_loading_sensor_ == NULL ||
-      finished_loading_sensor_->state == true) {
+  if (finished_loading_) {
     return;
   }
   HomeAssistantBaseMediaPlayer* newActivePlayer = NULL;
@@ -129,7 +130,10 @@ void HomeAssistantMediaPlayerGroup::findActivePlayer(bool background) {
     ESP_LOGI(TAG, "setting active player %s",
              newActivePlayer->get_entity_id().c_str());
     setActivePlayer(newActivePlayer);
-    finished_loading_sensor_->publish_state(true);
+    if (finished_loading_sensor_ != NULL) {
+      finished_loading_sensor_->publish_state(true);
+    }
+    finished_loading_ = true;
     if (!background) {
       // display->updateDisplay(true);
     }
@@ -335,8 +339,7 @@ bool HomeAssistantMediaPlayerGroup::selectGroup(
 }
 
 bool HomeAssistantMediaPlayerGroup::updateMediaPosition() {
-  if ((finished_loading_sensor_ != NULL &&
-       finished_loading_sensor_->state == false)) {
+  if (!finished_loading_) {
     ESP_LOGD(TAG, "updateMediaPosition: not finished loading");
     return false;
   }
