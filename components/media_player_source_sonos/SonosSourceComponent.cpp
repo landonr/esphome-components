@@ -23,7 +23,7 @@ void SonosSourceComponent::sonos_favorites_changed(std::string state) {
       }
       std::string value = v.value().as<std::string>();
       std::string key = v.key().c_str();
-      ESP_LOGD("group", "new JSON key value %s %s", key.c_str(), value.c_str());
+      ESP_LOGD(TAG, "new JSON key value %s %s", key.c_str(), value.c_str());
       auto newsource = new media_player_source::MediaPlayerSourceItem(
           value, key, media_player_source::MediaPlayerSourceTypeFavoriteItemID);
       this->sources_.push_back(newsource);

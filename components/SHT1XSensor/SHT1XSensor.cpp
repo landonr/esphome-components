@@ -6,7 +6,7 @@ namespace sht1xsensor {
 #define MIN_TEMP -40
 #define MAX_TEMP 254
 
-static const char *TAG = "sht1xsensor.sensor";
+static const char* TAG = "sht1xsensor.sensor";
 
 void SHT1XSensor::setup() {
   ESP_LOGCONFIG(TAG, "Setting up SHT1X '%s'...", this->name_.c_str());
