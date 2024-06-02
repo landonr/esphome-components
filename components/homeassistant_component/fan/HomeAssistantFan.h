@@ -29,12 +29,24 @@ class HomeAssistantFan
     ESP_LOGI(TAG, "publish_api_state: '%s'", this->get_name().c_str());
     std::map<std::string, std::string> data = {{"entity_id", entity_id_}};
 
-    if (call.get_oscillating()) {
-      data.insert({"oscilating", "true"});
+    if (call.get_state().has_value() && *call.get_state()) {
+      // if (call.get_oscillating()) {
+      //   data.insert({"oscilating", "true"});
+      // }
+      if (call.get_speed().has_value()) {
+        int percentage = *call.get_speed() * percentage_step;
+        ESP_LOGI(TAG, "publish_api_state: '%s' set speed to %d", this->get_name().c_str(), percentage);
+        data["percentage"] = to_string(percentage);
+        call_homeassistant_service("fan.set_percentage", data);
+      } else {
+        call_homeassistant_service("fan.turn_on", data);
+        ESP_LOGI(TAG, "publish_api_state: '%s' turn on", this->get_name().c_str());
+      }
+    } else {
+      call_homeassistant_service("fan.turn_off", data);
+      ESP_LOGI(TAG, "publish_api_state: '%s' turn off", this->get_name().c_str());
     }
-    // if (call.get_speed().has_value()) {
-    //   data["speed"] = to_string(*call.get_speed());
-    // }
+    next_api_publish_ = true;
     // if (call.get_direction().has_value()) {
     //   data["direction"] = *call.get_direction() ? "forward" : "reverse";
     // }
@@ -86,6 +98,7 @@ class HomeAssistantFan
 
   void state_changed(std::string state) {
     next_api_publish_ = false;
+    
     if (can_update_from_api()) {
       if (strcmp(state.c_str(), "on") == 0) {
         auto call = this->turn_on();
