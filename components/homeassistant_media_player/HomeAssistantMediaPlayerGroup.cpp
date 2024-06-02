@@ -37,8 +37,7 @@ bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
 }
 
 void HomeAssistantMediaPlayerGroup::selectFirstActivePlayer() {
-  if (finished_loading_ ||
-      loadedPlayers < 1) {
+  if (finished_loading_ || loadedPlayers < 1) {
     return;
   }
   for (auto& speaker : media_players_) {

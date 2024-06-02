@@ -189,7 +189,7 @@ HomeAssistantBaseMediaPlayer::get_option_menu_features(bool bottomMenu) {
   }
   bool power_set = false;
   for (auto& feature : supported_features_) {
-    ESP_LOGI("media_player", "get_option_menu_features: %s feature: %s",
+    ESP_LOGI(TAG, "get_option_menu_features: %s feature: %s",
              this->entity_id_.c_str(),
              supported_feature_string(feature).c_str());
     switch (feature) {

@@ -100,7 +100,9 @@ void HomeAssistantLight::publish_api_state(light::LightState* state) {
       data["brightness"] = to_string(brightness);
     }
     set_color_properties(&data, state, color_mode);
-    if (color_mode == light::ColorMode::RGB_WHITE || color_mode == light::ColorMode::RGB || color_mode == light::ColorMode::RGB_COLD_WARM_WHITE) {
+    if (color_mode == light::ColorMode::RGB_WHITE ||
+        color_mode == light::ColorMode::RGB ||
+        color_mode == light::ColorMode::RGB_COLD_WARM_WHITE) {
       call_homeassistant_service("script.hs_light_set", data);
     } else {
       call_homeassistant_service("light.turn_on", data);
@@ -326,9 +328,10 @@ void HomeAssistantLight::supported_color_modes_changed(std::string state) {
       supportedModes.insert(parsed_color_mode.value());
     }
   }
-  for(auto mode : supportedModes) {
-    ESP_LOGI(TAG, "'%s': (write %d) supported_color_modes_changed changed to %d",
-             get_name().c_str(), can_update_from_api(), static_cast<uint8_t>(mode));
+  for (auto mode : supportedModes) {
+    ESP_LOGI(
+        TAG, "'%s': (write %d) supported_color_modes_changed changed to %d",
+        get_name().c_str(), can_update_from_api(), static_cast<uint8_t>(mode));
   }
   light_traits_.set_supported_color_modes(supportedModes);
 }
