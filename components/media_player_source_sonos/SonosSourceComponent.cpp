@@ -14,12 +14,12 @@ void SonosSourceComponent::setup() {
 
 void SonosSourceComponent::sonos_favorites_changed(std::string state) {
   ESP_LOGI(TAG, "Sonos Favorites changes to %s", state.c_str());
-  json::parse_json(state, [this](JsonObject array) {
+  json::parse_json(state, [this](JsonObject array) -> bool {
     this->sources_.clear();
     int index = 0;
     for (JsonPair v : array) {
       if (index >= limit_) {
-        return;
+        return true;
       }
       std::string value = v.value().as<std::string>();
       std::string key = v.key().c_str();
@@ -30,6 +30,7 @@ void SonosSourceComponent::sonos_favorites_changed(std::string state) {
       index++;
     }
     array.clear();
+    return true;
   });
 }
 }  // namespace media_player_source_sonos
