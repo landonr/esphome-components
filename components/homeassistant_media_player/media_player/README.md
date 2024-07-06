@@ -1,6 +1,8 @@
-# ESPHome Home ASsistant Media Player Integration
+# ESPHome Home Assistant Media Player Integration
 
 This integration provides support for various Home Assistant media player entities through ESPHome. It includes base media player types as well as specialized media players for speakers, TVs, and specific TV platforms like Roku, Kodi, Samsung, and Android TV.
+
+Can be used in the [homeThing](https://github.com/landonr/homeThing) menu along with the [HomeAssistantMediaPlayerGroup](../README.md) 
 
 ## Features
 
