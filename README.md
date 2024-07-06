@@ -2,8 +2,9 @@
 
 <h3 align="center">
 ESPHome components to control Home Assistant stuff
-used by <a href="http://homething.io">homeThing! ❤️</a>
+used by <a href="https://github.com/landonr/homeThing">homeThing! ❤️</a>
 </h3>
+<h5 align="center"><a href="https://homeThing.io">homeThing.io</a></h5>
 
 ## Media Player
 ### [ESPHome](https://esphome.io/components/media_player/index.html) | [Home Assistant Component](https://github.com/landonr/esphome-components/tree/main/components/homeassistant_media_player/media_player)
