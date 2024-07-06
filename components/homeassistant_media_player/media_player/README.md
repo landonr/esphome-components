@@ -4,16 +4,30 @@ This integration provides support for various Home Assistant media player entiti
 
 ## Features
 
-- Define media player components that connect to Home Assistant entities.
-- Control media players from ESPHome nodes.
+- Media player components that connect to Home Assistant entities.
+- Control media players from ESPHome remotes and automations.
 - Configure media player sources and commands.
-- Define media player actions for TV media players.
+- Define custom actions for media players to access from menus.
 
 ## Installation
 
 1. Add the media player component configuration to your `esphome` project.
-2. Configure the desired media players and their options according to the available schema.
-3. Compile and flash the code to your ESPHome device.
+```yaml
+# example component installation
+external_components:
+  - source:
+      type: git
+      url: https://github.com/landonr/esphome-components
+      ref: main
+    refresh: 0s
+    components: [
+      homeassistant_media_player, # required for Home Assistant media player integration
+      media_player_source, # required for media player sources
+      media_player_source_sonos, # include if you have Sonos media player sources
+      media_player_source_spotify, # include if you have Spotify media player sources
+      media_player_source_custom # include if you have custom media player sources
+    ]
+```
 
 ## Configuration
 
@@ -21,7 +35,6 @@ The integration supports various media player types:
 
 - **Speaker**: Represents a Home Assistant media player entity that is a speaker.
 - **TV**: Represents a Home Assistant media player entity that is a TV.
-- **TV Types**:
     - **roku**: Represents a Home Assistant Roku TV media player.
     - **kodi**: Represents a Home Assistant Kodi TV media player.
     - **samsung**: Represents a Home Assistant Samsung TV media player.
@@ -38,7 +51,7 @@ The integration supports various media player types:
 
 ### Specific Media Player Configurations
 
-1. #### Speaker Configuration:
+#### Generic (or Sonos) Speaker Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -47,10 +60,12 @@ media_player:
   id: media_player_beam
   type: speaker
 
-  # optional
+  # optional, include one or more sources
   sources:
     - id: sonos
       type: sonos
+    - id: spotify
+      type: spotify
   commands:
     name: "group all"
     command:
@@ -58,7 +73,7 @@ media_player:
           service: script.sonos_group_all
 ```
 
-2. #### Spotify Speaker Configuration:
+#### Spotify Speaker Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -73,11 +88,11 @@ media_player:
       type: spotify
 ```
 
-2. #### TV Configuration:
+#### Roku TV Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
-  type: roku
+  type: roku # roku, kodi, samsung, android_tv currently supported
   name: Roku TV
   entity_id: "media_player.55_tcl_roku_tv"
   id: media_player_tv
@@ -87,7 +102,7 @@ media_player:
     speaker: media_player_beam
 ```
 
-4. #### Kodi TV Configuration:
+#### Kodi TV Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -97,7 +112,7 @@ media_player:
   id: media_player_kodi
 ```
 
-5. #### Samsung TV Configuration:
+#### Samsung TV Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
@@ -107,7 +122,7 @@ media_player:
   entity_id: media_player.living_room_samsung_tv
 ```
 
-6. #### Android TV Configuration:
+#### Android TV Configuration:
 ```yaml
 media_player:
   platform: homeassistant_media_player
