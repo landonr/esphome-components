@@ -9,12 +9,21 @@ AUTO_LOAD = ['number', 'homeassistant_component']
 
 HomeAssistantNumber = homeassistant_number_ns.class_("HomeAssistantNumber", number.Number, cg.Component, cg.EntityBase)
 
-CONFIG_SCHEMA = number.NUMBER_SCHEMA.extend(
+_BASE_NUMBER_SCHEMA = getattr(number, "NUMBER_SCHEMA", None)
+if _BASE_NUMBER_SCHEMA is None:
+    _BASE_NUMBER_SCHEMA = number.number_schema(HomeAssistantNumber)
+else:
+    _BASE_NUMBER_SCHEMA = _BASE_NUMBER_SCHEMA.extend(
+        {
+            cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantNumber),
+            cv.Required(CONF_ENTITY_ID): cv.entity_id,
+            cv.Required(CONF_NAME): cv.string,
+            cv.Optional(CONF_INTERNAL, default=True): cv.boolean,
+        }
+    )
+
+CONFIG_SCHEMA = _BASE_NUMBER_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantNumber),
-        cv.Required(CONF_ENTITY_ID): cv.entity_id,
-        cv.Required(CONF_NAME): cv.string,
-        cv.Optional(CONF_INTERNAL, default=True): cv.boolean,
         cv.Required(CONF_MAX_VALUE): cv.float_,
         cv.Required(CONF_MIN_VALUE): cv.float_,
         cv.Required(CONF_STEP): cv.positive_float,
