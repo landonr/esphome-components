@@ -1,7 +1,9 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import cover, homeassistant_component
+from esphome.components import cover
 from esphome.const import CONF_ENTITY_ID, CONF_NAME, CONF_ID, CONF_INTERNAL
+
+from .. import COMPONENT_CONFIG_SCHEMA, base_to_code
 
 homeassistant_cover_ns = cg.esphome_ns.namespace("homeassistant_cover")
 
@@ -16,9 +18,9 @@ COVER_SCHEMA = cover.COVER_SCHEMA.extend(
         cv.Required(CONF_NAME): cv.string,
         cv.Optional(CONF_INTERNAL, default=True): cv.boolean,
     }
-).extend(homeassistant_component.COMPONENT_CONFIG_SCHEMA)
+).extend(COMPONENT_CONFIG_SCHEMA)
 
-CONFIG_SCHEMA = homeassistant_component.COMPONENT_CONFIG_SCHEMA.extend(COVER_SCHEMA)
+CONFIG_SCHEMA = COMPONENT_CONFIG_SCHEMA.extend(COVER_SCHEMA)
 
 async def to_code(config):
     cg.add_build_flag("-DUSE_API_COVER")
@@ -26,5 +28,5 @@ async def to_code(config):
     
     await cg.register_component(var, config)
     await cover.register_cover(var, config)
-    homeassistant_component.base_to_code(var, config)
+    base_to_code(var, config)
     return var
