@@ -7,7 +7,7 @@ from .. import COMPONENT_CONFIG_SCHEMA, base_to_code
 
 homeassistant_number_ns = cg.esphome_ns.namespace("homeassistant_number")
 
-AUTO_LOAD = ['number', 'homeassistant_component']
+AUTO_LOAD = ['number']
 
 HomeAssistantNumber = homeassistant_number_ns.class_("HomeAssistantNumber", number.Number, cg.Component, cg.EntityBase)
 

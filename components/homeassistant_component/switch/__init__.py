@@ -7,7 +7,7 @@ from .. import COMPONENT_CONFIG_SCHEMA, base_to_code
 
 homeassistant_switch_ns = cg.esphome_ns.namespace("homeassistant_switch")
 
-AUTO_LOAD = ['switch', 'homeassistant_component']
+AUTO_LOAD = ['switch']
 
 HomeAssistantSwitch = homeassistant_switch_ns.class_("HomeAssistantSwitch", switch.Switch, cg.Component)
 

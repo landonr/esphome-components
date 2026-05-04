@@ -7,7 +7,7 @@ from .. import COMPONENT_CONFIG_SCHEMA, base_to_code
 
 homeassistant_light_ns = cg.esphome_ns.namespace("homeassistant_light")
 
-AUTO_LOAD = ['light', 'homeassistant_component']
+AUTO_LOAD = ['light']
 
 HomeAssistantLight = homeassistant_light_ns.class_("HomeAssistantLight", light.LightOutput, cg.Component, cg.EntityBase)
 HomeAssistantLightState = homeassistant_light_ns.class_("HomeAssistantLightState", light.LightState)
