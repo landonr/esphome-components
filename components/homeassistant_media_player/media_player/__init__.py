@@ -27,7 +27,7 @@ CONF_SOUNDBAR = "soundbar"
 CONF_SOURCES = "sources"
 CONF_COMMAND = "command"
 CONF_COMMANDS = "commands"
-
+CONF_REMOTE_ID = "remote_id"
 
 ServiceCalledTrigger = homeassistant_media_player_ns.class_(
     "ServiceCalledTrigger", automation.Trigger.template()
@@ -98,6 +98,7 @@ CONFIG_SCHEMA = cv.typed_schema(
         CONF_SAMSUNG: TV_CONFIG_SCHEMA.extend(
             {
                 cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantTVSamsungMediaPlayer),
+                cv.Required(CONF_REMOTE_ID): cv.string
             }
         ),
         CONF_ANDROID_TV: TV_CONFIG_SCHEMA.extend(
@@ -169,14 +170,14 @@ PowerAction = homeassistant_media_player_ns.class_(
 
 MEDIA_PLAYER_TV_ACTION_SCHEMA = maybe_simple_id({cv.GenerateID(): cv.use_id(HomeAssistantTVMediaPlayer)})
 
-@automation.register_action("media_player.up", UpAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
-@automation.register_action("media_player.down", DownAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
-@automation.register_action("media_player.left", LeftAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
-@automation.register_action("media_player.right", RightAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
-@automation.register_action("media_player.select", SelectAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
-@automation.register_action("media_player.back", BackAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
-@automation.register_action("media_player.home", HomeAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
-@automation.register_action("media_player.power", PowerAction, MEDIA_PLAYER_TV_ACTION_SCHEMA)
+@automation.register_action("media_player.up", UpAction, MEDIA_PLAYER_TV_ACTION_SCHEMA, synchronous=False)
+@automation.register_action("media_player.down", DownAction, MEDIA_PLAYER_TV_ACTION_SCHEMA, synchronous=False)
+@automation.register_action("media_player.left", LeftAction, MEDIA_PLAYER_TV_ACTION_SCHEMA, synchronous=False)
+@automation.register_action("media_player.right", RightAction, MEDIA_PLAYER_TV_ACTION_SCHEMA, synchronous=False)
+@automation.register_action("media_player.select", SelectAction, MEDIA_PLAYER_TV_ACTION_SCHEMA, synchronous=False)
+@automation.register_action("media_player.back", BackAction, MEDIA_PLAYER_TV_ACTION_SCHEMA, synchronous=False)
+@automation.register_action("media_player.home", HomeAction, MEDIA_PLAYER_TV_ACTION_SCHEMA, synchronous=False)
+@automation.register_action("media_player.power", PowerAction, MEDIA_PLAYER_TV_ACTION_SCHEMA, synchronous=False)
 
 async def media_player_tv_action(config, action_id, template_arg, args):
     var = cg.new_Pvariable(action_id, template_arg)
