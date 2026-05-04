@@ -11,16 +11,23 @@ AUTO_LOAD = ['cover']
 
 HomeAssistantCover = homeassistant_cover_ns.class_("HomeAssistantCover", cover.Cover, cg.Component, cg.EntityBase)
 
-COVER_SCHEMA = cover.COVER_SCHEMA.extend(
+_BASE_COVER_SCHEMA = getattr(cover, "COVER_SCHEMA", None)
+if _BASE_COVER_SCHEMA is None:
+    _BASE_COVER_SCHEMA = cover.cover_schema(HomeAssistantCover)
+else:
+    _BASE_COVER_SCHEMA = _BASE_COVER_SCHEMA.extend(
+        {
+            cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantCover),
+            cv.Required(CONF_NAME): cv.string,
+            cv.Optional(CONF_INTERNAL, default=True): cv.boolean,
+        }
+    )
+
+CONFIG_SCHEMA = _BASE_COVER_SCHEMA.extend(
     {
-        cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantCover),
         cv.Required(CONF_ENTITY_ID): cv.entity_id,
-        cv.Required(CONF_NAME): cv.string,
-        cv.Optional(CONF_INTERNAL, default=True): cv.boolean,
     }
 ).extend(COMPONENT_CONFIG_SCHEMA)
-
-CONFIG_SCHEMA = COMPONENT_CONFIG_SCHEMA.extend(COVER_SCHEMA)
 
 async def to_code(config):
     cg.add_build_flag("-DUSE_API_COVER")
