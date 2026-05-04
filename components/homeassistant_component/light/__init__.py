@@ -27,5 +27,3 @@ async def to_code(config):
     await cg.register_component(var, config)
     await light.register_light(var, config)
     base_to_code(var, config)
-    lightState = await cg.get_variable(config[CONF_ID])
-    cg.add(lightState.set_internal(True))
