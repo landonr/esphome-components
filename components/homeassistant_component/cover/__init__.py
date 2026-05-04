@@ -11,11 +11,11 @@ AUTO_LOAD = ['cover']
 
 HomeAssistantCover = homeassistant_cover_ns.class_("HomeAssistantCover", cover.Cover, cg.Component, cg.EntityBase)
 
-_BASE_COVER_SCHEMA = getattr(cover, "COVER_SCHEMA", None)
-if _BASE_COVER_SCHEMA is None:
-    _BASE_COVER_SCHEMA = cover.cover_schema(HomeAssistantCover)
+_COVER_SCHEMA_HELPER = getattr(cover, "cover_schema", None)
+if callable(_COVER_SCHEMA_HELPER):
+    _BASE_COVER_SCHEMA = _COVER_SCHEMA_HELPER(HomeAssistantCover)
 else:
-    _BASE_COVER_SCHEMA = _BASE_COVER_SCHEMA.extend(
+    _BASE_COVER_SCHEMA = cover.COVER_SCHEMA.extend(
         {
             cv.GenerateID(CONF_ID): cv.declare_id(HomeAssistantCover),
             cv.Required(CONF_NAME): cv.string,
