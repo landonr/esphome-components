@@ -321,19 +321,19 @@ void HomeAssistantLight::supported_color_modes_changed(std::string state) {
   ESP_LOGI(TAG, "'%s': (write %d) supported_color_modes_changed changed to %s",
            get_name().c_str(), can_update_from_api(), state.c_str());
   auto modes = split(state, ",");
-  std::set<light::ColorMode> supportedModes;
+  light::ColorModeMask supported_modes;
   for (auto cmode : modes) {
     auto parsed_color_mode = parse_color_mode(cmode);
     if (parsed_color_mode.has_value()) {
-      supportedModes.insert(parsed_color_mode.value());
+      supported_modes.insert(parsed_color_mode.value());
     }
   }
-  for (auto mode : supportedModes) {
+  for (auto mode : supported_modes) {
     ESP_LOGI(
         TAG, "'%s': (write %d) supported_color_modes_changed changed to %d",
         get_name().c_str(), can_update_from_api(), static_cast<uint8_t>(mode));
   }
-  light_traits_.set_supported_color_modes(supportedModes);
+  light_traits_.set_supported_color_modes(supported_modes);
 }
 
 bool HomeAssistantLight::get_state() {
