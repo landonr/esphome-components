@@ -107,7 +107,7 @@ MEDIA_PLAYER_GROUP_ACTION_SCHEMA = maybe_simple_id(
     }
 )
 
-@automation.register_action("media_player_group.select_next_player", SelectNextMediaPlayerAction, MEDIA_PLAYER_GROUP_ACTION_SCHEMA)
+@automation.register_action("media_player_group.select_next_player", SelectNextMediaPlayerAction, MEDIA_PLAYER_GROUP_ACTION_SCHEMA, synchronous=False)
 async def select_next_media_player_to_code(config, action_id, template_arg, args):
     paren = await cg.get_variable(config[CONF_ID])
     return cg.new_Pvariable(action_id, template_arg, paren)

@@ -45,6 +45,4 @@ def new_source_base(config):
     
     if CONF_ENTITY_ID in config:
         cg.add(var.set_entity_id(config[CONF_ENTITY_ID]))
-    if CONF_NAME in config:
-        cg.add(var.set_name(config[CONF_NAME]))
     return var

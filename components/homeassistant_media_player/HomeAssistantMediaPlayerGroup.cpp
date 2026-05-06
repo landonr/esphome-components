@@ -16,7 +16,9 @@ void HomeAssistantMediaPlayerGroup::register_media_player(
   media_players_.push_back(new_media_player);
 
   new_media_player->add_on_state_callback(
-      [this, new_media_player]() { this->state_updated(new_media_player); });
+      [this, new_media_player](media_player::MediaPlayerState) {
+        this->state_updated(new_media_player);
+      });
 }
 
 bool HomeAssistantMediaPlayerGroup::selectMediaPlayers(
